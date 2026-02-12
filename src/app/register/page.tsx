@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,7 +12,6 @@ import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import Link from 'next/link'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { signIn } from "next-auth/react";
 
 
@@ -21,7 +20,6 @@ const SignupPage = () => {
      const [loading, setLoading] = useState<boolean>(false);
      const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [role, setRole] = useState<string>("");
 
 
 const handlereg = async (e: React.FormEvent) => {
@@ -31,7 +29,7 @@ const handlereg = async (e: React.FormEvent) => {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password, role }),
+      body: JSON.stringify({ username, password }),
     });
 
     const data = await res.json();
@@ -53,7 +51,7 @@ const handlelog = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
   try {
-    const result = await signIn("credentials", {
+    await signIn("credentials", {
       redirect: true,
       username,
       password,
