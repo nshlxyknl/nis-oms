@@ -11,13 +11,15 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
-import Link from 'next/link'
 import { signIn } from "next-auth/react";
+import { useRouter } from 'next/navigation'
 
 
 
 const SignupPage = () => {
+  const router =useRouter()
      const [loading, setLoading] = useState<boolean>(false);
+     const [tab, setTab] = useState<string>("login");
      const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -37,7 +39,8 @@ const handlereg = async (e: React.FormEvent) => {
     if (!res.ok) {
       toast.error(data.error || "Registration failed");
     } else {
-      toast.success("Registered successfully! Logging in...");
+      toast.success("Registered successfully!");
+      await handleTabChange("login");
     }
   } catch (err) {
     console.error(err);
@@ -47,15 +50,21 @@ const handlereg = async (e: React.FormEvent) => {
   }
 };
 
+
 const handlelog = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
   try {
-    await signIn("credentials", {
-      redirect: true,
+ const  result= await   signIn("credentials", {
+      redirect: false,
       username,
       password,
     });
+if (result?.ok) {
+  router.replace("/dashboard"); 
+  toast.success("Login success!");
+}      
+
   } catch (err) {
     console.error(err);
     toast.error("Login failed");
@@ -63,6 +72,12 @@ const handlelog = async (e: React.FormEvent) => {
     setLoading(false);
   }
 };
+
+const handleTabChange=(value: string)=>{
+  setTab(value);
+  setUsername('')
+  setPassword('')
+}
 
 
   return (
@@ -75,14 +90,14 @@ const handlelog = async (e: React.FormEvent) => {
               <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
 
             <Badge variant="secondary" className="flex items-center gap-2">
-        Saving
+        Checking
         <Spinner data-icon="inline-end"  />
       </Badge>
       </div>
       </>
       :
 
-            <Tabs defaultValue="register" className="w-100">
+            <Tabs value={tab} onValueChange={handleTabChange} className="w-100">
   <TabsList>
     <TabsTrigger value="register">Register</TabsTrigger>
     <TabsTrigger value="login">Login</TabsTrigger>
@@ -98,9 +113,9 @@ const handlelog = async (e: React.FormEvent) => {
                                <Button type='submit' className="w-full sm:w-auto" disabled={loading}> {loading? "Registering..":"Register"} </Button>
                                </div>
                   <h3 className='text-center'> Already have an account? {""}
-                    <Link href={"/login"} className="text-blue-600 hover:underline">
+                    <span onClick={() => setTab("login")} className="text-blue-600 hover:underline hover: cursor-pointer">
                     Login
-                    </Link>
+                    </span>
                   </h3>
                                 </form>
                 </CardContent>
@@ -118,9 +133,9 @@ const handlelog = async (e: React.FormEvent) => {
             </div>
 
             <h3 className='text-center'> Don't have an account? {""}
-              <Link href={"/register"} className="text-blue-600 hover:underline">
+              <span onClick={() => setTab("register")} className="text-blue-600 hover:underline hover: cursor-pointer">
                 Register
-              </Link>
+              </span>
             </h3>
           </form>
                 </CardContent>

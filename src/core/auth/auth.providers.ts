@@ -1,7 +1,7 @@
-// import GithubProvider from "next-auth/providers/github"
 import { prisma } from "@/lib/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
+
 
 
 export const authProviders = 
@@ -28,7 +28,9 @@ const user = await prisma.user.findUnique({
      const isValid = await compare(credentials.password, user.password);
       if (!isValid) return null;
 
-      return { id: user.id.toString(), name: user.username };
+      return { id: user.id.toString(), 
+        name: user.username,
+      role: user.role || "user" };
     }
   })
 
