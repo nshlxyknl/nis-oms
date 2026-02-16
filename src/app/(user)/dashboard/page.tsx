@@ -2,7 +2,8 @@
 
 import AdminDashboard from '@/components/pages/AdminDashboard'
 import UserDashboard from '@/components/pages/UserDashboard'
-import { useSession } from 'next-auth/react'
+import { Button } from '@/components/ui/button'
+import { signOut, useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
 const Dashboard = () => {
