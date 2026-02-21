@@ -1,12 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Role-based route map
-// const roleRoutes: Record<string, string[]> = {
-//   '/dashboard/admin': ['ADMIN'],
-//   '/dashboard/employee': ['EMPLOYEE'],
-//   '/dashboard/intern': ['INTERN'],
-// };
+
 
 // Auth pages
 const authPages = ['/auth'];
@@ -31,11 +26,11 @@ export async function rbacMiddleware(req: NextRequest) {
 //   /* =========================
 //      2️⃣ Not logged-in user
 //      ========================= */
-//   const isProtectedRoute = Object.keys(roleRoutes).some((route) => pathname.startsWith(route));
-
-//   if (!isLoggedIn && isProtectedRoute) {
-//     return redirectToLogin(req);
-//   }
+const isProtectedRoute =
+    pathname.startsWith('/dashboard');
+  if (!isLoggedIn && isProtectedRoute) {
+    return redirectToLogin(req);
+  }
 
   /* =========================
      3️⃣ Role-based access
@@ -57,11 +52,11 @@ export async function rbacMiddleware(req: NextRequest) {
    Helpers
    ========================= */
 
-// function redirectToLogin(req: NextRequest) {
-//   const url = req.nextUrl.clone();
-//   url.pathname = '/auth/login';
-//   return NextResponse.redirect(url);
-// }
+function redirectToLogin(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  url.pathname = '/auth';
+  return NextResponse.redirect(url);
+}
 
 function redirectToDashboard(req: NextRequest, role?: string) {
   const url = req.nextUrl.clone();

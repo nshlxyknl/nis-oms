@@ -129,9 +129,7 @@ const handleTabChange=(value: string)=>{
             <Input type='password' placeholder='password' value={password} onChange={(e) => setPassword(e.target.value)} className={'p-4'} />
             <div className="flex flex-col gap-4 justify-center items-center">
               <Button type='submit' className="w-full sm:w-auto" disabled={loading}> {loading ? "Logging in.." : "Login"}</Button>
-             
             </div>
-
             <h3 className='text-center'> Don't have an account? {""}
               <span onClick={() => setTab("register")} className="text-blue-600 hover:underline hover: cursor-pointer">
                 Register
@@ -141,7 +139,6 @@ const handleTabChange=(value: string)=>{
                 </CardContent>
             </Card></TabsContent>
 </Tabs>
-
 }
         </div>  )
 }
