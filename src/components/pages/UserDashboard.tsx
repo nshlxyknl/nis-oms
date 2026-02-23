@@ -6,15 +6,13 @@ import {
 } from "@/components/ui/sidebar"
 
 const UserDashboard = () => {
-
- 
   return (
-     <div className="[--header-height:calc(--spacing(14))]">
-      <SidebarProvider className="flex flex-col">
-        <SiteHeader />
-        <div className="flex flex-1">
-          <AppSidebar role="user" />
-          <SidebarInset>
+    <SidebarProvider>
+      <div className="flex h-screen w-full">
+        <AppSidebar />
+        <div className="flex flex-1 flex-col">
+          <SiteHeader />
+          <SidebarInset className="flex-1">
             <div className="flex flex-1 flex-col gap-4 p-4">
               <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                 <div className="bg-muted/50 aspect-video rounded-xl" />
@@ -25,8 +23,8 @@ const UserDashboard = () => {
             </div>
           </SidebarInset>
         </div>
-      </SidebarProvider>
-    </div>
+      </div>
+    </SidebarProvider>
   )
 }
 
