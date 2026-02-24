@@ -19,7 +19,6 @@ export const adminData = {
     },
     {
       title: "Approvals",
-      url: "/dashboard/approvals",
       icon: SquareTerminal,
        items: [
         {
