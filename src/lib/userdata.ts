@@ -16,30 +16,35 @@ export const userData = {
   },
   navMain: [
     {
+      title: "Overview",
+      url: "/dashboard/overview",
+      icon: SquareTerminal,
+    },
+    {
       title: "Attendance",
-      url: "#",
+      url: "/dashboard/attendance",
       icon: SquareTerminal,
     },
     {
       title: "Leave",
-      url: "#",
+      url: "/dashboard/leave",
       icon: Bot,
     },
     {
       title: "Book Rooms",
-      url: "#",
+      url: "/dashboard/book-rooms",
       icon: BookOpen,
     },
     {
       title: "Book Assets",
-      url: "#",
+      url: "/dashboard/book-assets",
       icon: Settings2,
     },
   ],
   navSecondary: [
     {
       title: "See Notices",
-      url: "#",
+      url: "/dashboard/notices",
       icon: Send,
     },
   ],

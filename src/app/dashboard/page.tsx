@@ -1,13 +1,12 @@
 "use client"
 
-import AdminDashboard from '@/components/pages/AdminDashboard'
-import UserDashboard from '@/components/pages/UserDashboard'
+
 import { Button } from '@/components/ui/button'
 import { signOut, useSession } from 'next-auth/react'
+import { redirect, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 const Dashboard = () => {
-    const { data: session } = useSession()
 
     useEffect(() => {
     // Prevent back button
@@ -24,14 +23,8 @@ const Dashboard = () => {
     }
   }, [])
 
-  return (<>
-{session?.user?.role === "admin" ? (
-        <AdminDashboard />
-      ) : (
-        <UserDashboard />
-      )}  
-      </>
-      )
+    redirect("/dashboard/overview")
+
       
 }
 

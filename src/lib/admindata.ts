@@ -13,42 +13,45 @@ export const adminData = {
   },
   navMain: [
     {
-      title: "Approvals",
-      url: "#",
+      title: "Overview",
+      url: "/dashboard/overview",
       icon: SquareTerminal,
-      isActive: true,
+    },
+    {
+      title: "Approvals",
+      url: "/approvals",
+      icon: SquareTerminal,
        items: [
         {
           title: "Rooms",
-          url: "#",
+          url: "/dashboard/rooms",
         },
         {
           title: "Assets",
-          url: "#",
+          url: "/assets-approvals",
         }
       ],
     },
     {
       title: "Employees",
-      url: "#",
+      url: "/employees",
       icon: SquareTerminal,
-      isActive: true,
     },
     {
       title: "Our Rooms",
-      url: "#",
+      url: "/dashboard/rooms",
       icon: Bot,
     },
      {
       title: "Our Assets",
-      url: "#",
+      url: "/assets",
       icon: BookOpen,
     },
   ],
   navSecondary: [
     {
       title: "Add Notice",
-      url: "#",
+      url: "/notice",
       icon: Send,
     },
   ],

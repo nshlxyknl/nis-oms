@@ -27,6 +27,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const sideData = session?.user?.role === "admin" ? adminData : userData;
 
+
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
