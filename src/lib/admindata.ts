@@ -19,39 +19,39 @@ export const adminData = {
     },
     {
       title: "Approvals",
-      url: "/approvals",
+      url: "/dashboard/approvals",
       icon: SquareTerminal,
        items: [
         {
           title: "Rooms",
-          url: "/dashboard/rooms",
+          url: "/dashboard/approvals/rooms",
         },
         {
           title: "Assets",
-          url: "/assets-approvals",
+          url: "/dashboard/approvals/assets",
         }
       ],
     },
     {
       title: "Employees",
-      url: "/employees",
+      url: "/dashboard/employees",
       icon: SquareTerminal,
     },
     {
       title: "Our Rooms",
-      url: "/dashboard/rooms",
+      url: "/dashboard/total-rooms",
       icon: Bot,
     },
      {
       title: "Our Assets",
-      url: "/assets",
+      url: "/dashboard/total-assets",
       icon: BookOpen,
     },
   ],
   navSecondary: [
     {
       title: "Add Notice",
-      url: "/notice",
+      url: "/dashboard/add-notice",
       icon: Send,
     },
   ],
