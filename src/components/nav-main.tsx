@@ -25,7 +25,7 @@ export function NavMain({
 }: {
   items: {
     title: string
-    url: string
+   url?: string
     icon: LucideIcon
     isActive?: boolean
     items?: {
@@ -33,6 +33,7 @@ export function NavMain({
       url: string
     }[]
   }[]
+
 }) {
 
   const pathname = usePathname()
@@ -47,6 +48,7 @@ export function NavMain({
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
+                 
                 <a href={item.url}  className={isActive ? "bg-muted font-semibold" : ""}>
                   <item.icon />
                   <span>{item.title}</span>

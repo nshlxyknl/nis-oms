@@ -5,7 +5,7 @@ import NoticeCard from '../cards/NoticeCard'
 
 const UserOverview = () => {
   return (
-          <main className="max-w-7xl mx-auto px-6 py-8">
+          <main className="w-full mx-auto px-6 py-8">
             <StatusCard/>
             <FeaturesCard/>
             <NoticeCard/>

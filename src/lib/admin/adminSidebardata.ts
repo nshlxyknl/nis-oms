@@ -1,6 +1,7 @@
 import {
   BookOpen,
   Bot,
+  Plus,
   Send,
   SquareTerminal,
 } from "lucide-react"
@@ -49,8 +50,13 @@ export const adminData = {
   ],
   navSecondary: [
     {
-      title: "Add Notice",
-      url: "/dashboard/add-notice",
+      title: "Add Notices",
+      icon: Plus,
+      action: "open-add-notice" as const,
+    },
+    {
+      title: "See Notices",
+      url: "/dashboard/notices",
       icon: Send,
     },
   ],

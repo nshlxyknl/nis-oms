@@ -19,17 +19,29 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useSession } from "next-auth/react";
-import { adminData } from "@/lib/admindata";
-import { userData } from "@/lib/userdata";
+import { adminData } from "@/lib/admin/adminSidebardata";
+import { userData } from "@/lib/user/userSidebardata";
+
+import { useState } from "react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "./ui/button";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session } = useSession();
+  const [open, setOpen] = useState(false)
+
 
   const sideData = session?.user?.role === "admin" ? adminData : userData;
 
 
 
   return (
+    <>
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
@@ -50,12 +62,39 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={sideData.navMain} />
-        <NavSecondary items={sideData.navSecondary} className="mt-auto" />
+        <NavSecondary items={sideData.navSecondary} onAction={(action) => {
+    if (action === "open-add-notice") {
+      setOpen(true)
+    }
+  }} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={sideData.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
+
+     <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add Notice</DialogTitle>
+          </DialogHeader>
+
+          <form className="space-y-4">
+           
+            <textarea
+              placeholder="Notice"
+              className="w-full border rounded-md p-2"
+            />
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white rounded-md p-2"
+            >
+              Save Notice
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+      </>
   );
 }

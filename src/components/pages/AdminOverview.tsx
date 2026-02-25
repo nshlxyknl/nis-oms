@@ -1,9 +1,11 @@
 import { LayoutDashboard } from 'lucide-react'
 import React from 'react'
+import FeaturesCard from '../cards/FeaturesCard'
+import NoticeCard from '../cards/NoticeCard'
 
 const AdminOverview = () => {
   return (
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="w-full mx-auto px-6 py-8">
        
         <div className="rounded-xl border border-border bg-card p-5 mb-8 flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -15,7 +17,8 @@ const AdminOverview = () => {
           </div>
         </div>
 
-        
+<FeaturesCard/>
+<NoticeCard/>
         </main>
   )
 }

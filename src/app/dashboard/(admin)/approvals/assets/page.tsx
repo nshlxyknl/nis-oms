@@ -1,9 +1,14 @@
-import React from 'react'
+"use client"
+
+import AssetsApprovalCard from '@/components/cards/AssetsApprovalCard';
 
 const Assets = () => {
+
+
+
   return (
-    <div>AdminAssets</div>
-  )
+<AssetsApprovalCard />
+ )
 }
 
 export default Assets

@@ -1,7 +1,4 @@
-import { ArrowRight, Megaphone, Pin } from 'lucide-react';
-import React from 'react'
-
-const NoticeCard = () => {
+import { Megaphone, Pin } from 'lucide-react';
 
   const notices = [
   {
@@ -14,13 +11,13 @@ const NoticeCard = () => {
     id: 2,
     title: "New parking policy effective from March 1",
     date: "Feb 20, 2026",
-    pinned: false,
+    pinned: true,
   },
   {
     id: 3,
     title: "Annual team outing scheduled — RSVP by March 5",
     date: "Feb 18, 2026",
-    pinned: false,
+    pinned: true,
   },
   {
     id: 4,
@@ -30,6 +27,9 @@ const NoticeCard = () => {
   },
 ];
 
+const NoticeCard = () => {
+
+
 
   return (
 <div>
@@ -38,12 +38,14 @@ const NoticeCard = () => {
               <Megaphone className="w-5 h-5 text-primary" />
               <h2 className="text-lg font-display font-semibold text-foreground">Notices</h2>
             </div>
-            <button className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:gap-2.5 transition-all">
+            {/* <button className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:gap-2.5 transition-all">
               View All <ArrowRight className="w-4 h-4" />
-            </button>
+            </button> */}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {notices.map((notice) => (
+            { notices
+              .filter((notice) => notice.pinned)
+           . map((notice) => (
               <div
                 key={notice.id}
                 className="group bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 hover:border-primary/40 cursor-pointer"
