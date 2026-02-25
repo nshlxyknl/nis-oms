@@ -23,8 +23,6 @@ const RoomApprovalCard = () => {
     const [roomApprovals, setRoomApprovals] = useState(pendingRoomApprovals);
   
 
-
-
     const statusColors: Record<string, string> = {
   online: "bg-green-100 text-green-800",
   offline: "bg-gray-100 text-gray-800",

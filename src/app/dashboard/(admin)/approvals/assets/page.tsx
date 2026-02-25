@@ -4,10 +4,10 @@ import AssetsApprovalCard from '@/components/cards/AssetsApprovalCard';
 
 const Assets = () => {
 
-
-
   return (
-<AssetsApprovalCard />
+    <div className='m-10'>
+<AssetsApprovalCard  />
+</div>
  )
 }
 

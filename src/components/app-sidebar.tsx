@@ -7,7 +7,6 @@ import {
 
 import { NavMain } from "@/components/nav-main";
 import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -35,7 +34,6 @@ import SkeletonCard from "./cards/SkeletonCard";
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session , status} = useSession();
   const [open, setOpen] = useState(false)
-
 
   const sideData = session?.user?.role === "admin" ? adminData : userData;
 
@@ -71,7 +69,6 @@ if (status== "loading")
   }} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        {/* <NavUser user={sideData.user} /> */}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

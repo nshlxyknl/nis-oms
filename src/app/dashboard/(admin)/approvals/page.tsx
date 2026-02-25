@@ -1,9 +1,8 @@
+import { redirect } from 'next/navigation'
 import React from 'react'
 
 const Approvalspage = () => {
-  return (
-    <div>Approvalspage</div>
-  )
+ redirect('/dashboard/approvals/assets')
 }
 
 export default Approvalspage
