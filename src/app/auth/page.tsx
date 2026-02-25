@@ -86,7 +86,7 @@ const handleTabChange=(value: string)=>{
         {
             loading ?
             <>
-            <Skeleton className="h-12 w-12 rounded-full" />
+            <Skeleton className="w-50 h-40" />
               <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
 
             <Badge variant="secondary" className="flex items-center gap-2">

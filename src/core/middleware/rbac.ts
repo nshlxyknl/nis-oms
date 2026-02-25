@@ -2,7 +2,7 @@ import { getToken } from 'next-auth/jwt';
 import { NextRequest, NextResponse } from 'next/server';
 
 
-
+const roleRoutes=["admin","user"]
 // Auth pages
 const authPages = ['/auth'];
 
@@ -35,18 +35,18 @@ const isProtectedRoute =
   /* =========================
      3️⃣ Role-based access
      ========================= */
-//   if (isLoggedIn) {
-//     const allowedRoles = Object.entries(roleRoutes).find(([route]) =>
-//       pathname.startsWith(route)
-//     )?.[1];
+  if (isLoggedIn) {
+    const allowedRoles = Object.entries(roleRoutes).find(([route]) =>
+      pathname.startsWith(route)
+    )?.[1];
 
-//     if (allowedRoles && !allowedRoles.includes(token.role)) {
-//       return redirectToDashboard(req, token.role);
-//     }
-//   }
+    if (allowedRoles && !allowedRoles.includes(token.role)) {
+      return redirectToDashboard(req, token.role);
+    }
+  }
 
-//   return NextResponse.next();
-// }
+  return NextResponse.next();
+
 
 /* =========================
    Helpers

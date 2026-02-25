@@ -8,7 +8,7 @@ export async function proxy(req:NextRequest) {
   return rbacMiddleware(req);
 }
 export const config = {
-  matcher: [ '/auth',"/dashboard","/user/:path*", "/admin/:path*", '/auth/:path*'], 
+  matcher: [ '/auth',"/dashboard/:path*","/user/:path*", "/admin/:path*", '/auth/:path*'], 
 
 }
 

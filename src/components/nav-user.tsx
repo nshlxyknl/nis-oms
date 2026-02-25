@@ -40,13 +40,16 @@ export function NavUser({
     avatar: string
   }
 }) {
-  const { isMobile } = useSidebar()
+
+
   const handlesignout=async()=>{
       await signOut({
        redirect: true,
        callbackUrl: '/auth', 
      });
    }
+
+
 
   return (
     <SidebarMenu>
@@ -69,8 +72,7 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            className="min-w-56 rounded-lg"
             align="end"
             sideOffset={4}
           >
@@ -94,9 +96,9 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={()=>handlesignout()}>
               <LogOut />
-              <a onClick={()=>handlesignout()} >Logout</a>
+              Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

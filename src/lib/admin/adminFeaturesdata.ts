@@ -1,7 +1,6 @@
 
 import {
-  Clock,
-  CalendarDays,
+  
   DoorOpen,
   Package,
   User,

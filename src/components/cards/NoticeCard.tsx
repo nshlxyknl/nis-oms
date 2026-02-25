@@ -1,6 +1,6 @@
 import { Megaphone, Pin } from 'lucide-react';
 
-  const notices = [
+  export const notices = [
   {
     id: 1,
     title: "Office closed on Feb 28 for maintenance",
@@ -17,7 +17,7 @@ import { Megaphone, Pin } from 'lucide-react';
     id: 3,
     title: "Annual team outing scheduled — RSVP by March 5",
     date: "Feb 18, 2026",
-    pinned: true,
+    pinned: false,
   },
   {
     id: 4,
