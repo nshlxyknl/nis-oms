@@ -3,7 +3,7 @@ import { statusColors } from '@/lib/statuscolor'
 
  type Status = "available" | "occupied" | "maintenance" | "active" | "inactive" | "assigned";
 
- interface BaseItems {
+export interface BaseItems {
   id: number;
   name: string;
   status: Status;
@@ -18,12 +18,10 @@ interface IProps<T extends BaseItems>{
     renderSubtitle:(item: T) => string;
 }
 
-const TotalCards = <T extends BaseItems>({items,title,icon,iconBg,renderSubtitle ,accentColor}: IProps<T>) => {
+const TotalCards = <T extends BaseItems>({items,icon,iconBg,renderSubtitle ,accentColor}: IProps<T>) => {
   return (
 <div className='m-10'>
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-        <span className={iconBg + " p-1 rounded"}>{icon}</span> {title}
-            </h2>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {items.map((item) => (
                 <div key={item.id} className={`group bg-card rounded-xl border border-border p-5 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${accentColor}`}>
