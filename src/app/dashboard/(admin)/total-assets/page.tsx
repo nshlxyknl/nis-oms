@@ -77,11 +77,6 @@ const TotalAssets = () => {
         iconBg="bg-blue-100"
         accentColor="hover:border-blue-400"
         renderSubtitle={(asset) => `${asset.category} · ${asset.assignedTo}`}
-         statusOptions={[                          // 👈 asset specific
-    { value: "assigned", label: "Assigned" },
-    { value: "available", label: "Available" },
-    { value: "maintenance", label: "Maintenance" },
-  ]}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
