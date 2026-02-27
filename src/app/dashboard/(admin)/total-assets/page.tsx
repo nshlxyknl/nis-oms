@@ -77,6 +77,11 @@ const TotalAssets = () => {
         iconBg="bg-blue-100"
         accentColor="hover:border-blue-400"
         renderSubtitle={(asset) => `${asset.category} · ${asset.assignedTo}`}
+         statusOptions={[                          // 👈 asset specific
+    { value: "assigned", label: "Assigned" },
+    { value: "available", label: "Available" },
+    { value: "maintenance", label: "Maintenance" },
+  ]}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -86,7 +91,7 @@ const TotalAssets = () => {
           </DialogHeader>
 
           <form className="space-y-4">
-            <Input placeholder="name"></Input>
+            <Input placeholder="name" className="w-100"></Input>
 
             <Select>
               <SelectTrigger className="w-full max-w-48">

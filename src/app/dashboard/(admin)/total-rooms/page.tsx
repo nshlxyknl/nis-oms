@@ -1,6 +1,4 @@
 import { Building, DoorOpen } from 'lucide-react';
-import React from 'react'
-import { statusColors } from '@/lib/statuscolor';
 import TotalCards from '@/components/cards/TotalCards';
 import { BaseItems } from '@/components/cards/TotalCards';
 
