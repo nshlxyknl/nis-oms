@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 interface Assets extends BaseItems {
   category: string;
@@ -26,7 +27,7 @@ interface Assets extends BaseItems {
 }
 
 const TotalAssets = () => {
-  const assets = [
+  const [assets, setAssets] = useState<Assets[]>([
     {
       id: 1,
       name: 'MacBook Pro 16"',
@@ -55,9 +56,44 @@ const TotalAssets = () => {
       assignedTo: "—",
       status: "maintenance",
     },
-  ] as Assets[];
+  ]);
 
   const [open, setOpen] = useState<boolean>(false);
+
+  const handleStatusChange = (assetId: number, newStatus: "available" | "occupied" | "maintenance" | "assigned", userId?: number) => {
+    setAssets(prevAssets => 
+      prevAssets.map(asset => {
+        if (asset.id === assetId) {
+          const updatedAsset = { ...asset, status: newStatus };
+          // If assigning to a user, update the assignedTo field
+          if (newStatus === "assigned" && userId) {
+            const user = mockUsers.find(u => u.id === userId);
+            updatedAsset.assignedTo = user ? user.name : "—";
+          } else if (newStatus === "available") {
+            updatedAsset.assignedTo = "—";
+          }
+          return updatedAsset;
+        }
+        return asset;
+      })
+    );
+    
+    if (userId) {
+      const user = mockUsers.find(u => u.id === userId);
+      toast.success(`Asset assigned to ${user?.name}`);
+    } else {
+      toast.success(`Asset status updated to ${newStatus}`);
+    }
+  };
+
+  const mockUsers = [
+    { id: 1, name: "Alice Johnson", email: "alice@company.com", role: "USER" },
+    { id: 2, name: "Bob Smith", email: "bob@company.com", role: "USER" },
+    { id: 3, name: "Charlie Davis", email: "charlie@company.com", role: "USER" },
+    { id: 4, name: "Diana Prince", email: "diana@company.com", role: "ADMIN" },
+    { id: 5, name: "Ethan Hunt", email: "ethan@company.com", role: "ADMIN" },
+    { id: 6, name: "Fiona Green", email: "fiona@company.com", role: "USER" },
+  ] as const;
 
   return (
     <div>
@@ -77,6 +113,8 @@ const TotalAssets = () => {
         iconBg="bg-blue-100"
         accentColor="hover:border-blue-400"
         renderSubtitle={(asset) => `${asset.category} · ${asset.assignedTo}`}
+        onStatusChange={handleStatusChange}
+        type="asset"
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
