@@ -28,8 +28,8 @@ export function EmployeeTable() {
       </TableHeader>
       <TableBody>
         <TableRow className="">
-          <TableCell className="font-medium">Wireless mac</TableCell>
-          <TableCell>$29.99</TableCell>
+          <TableCell className="font-medium">Bibek</TableCell>
+          <TableCell>CTO</TableCell>
           <TableCell className="">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

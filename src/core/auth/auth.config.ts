@@ -5,6 +5,7 @@ import { authCallbacks } from "./auth.callback";
 
 export const authConfig: NextAuthOptions = {
   providers: authProviders,
+   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy:"jwt"
   },
