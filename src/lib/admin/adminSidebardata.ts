@@ -29,6 +29,10 @@ export const adminData = {
         {
           title: "Assets",
           url: "/dashboard/approvals/assets",
+        },
+         {
+          title: "Leave",
+          url: "/dashboard/approvals/leave",
         }
       ],
     },

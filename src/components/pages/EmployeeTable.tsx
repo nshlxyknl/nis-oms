@@ -7,6 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,10 +20,12 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { toast } from "sonner";
+import { Eye } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,7 +48,7 @@ interface Employee {
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
-const EMPLOYEES: Employee[] = [
+const INITIAL_EMPLOYEES: Employee[] = [
   { id: 1, name: 'Alice Johnson', email: 'alice@oms.com', role: 'admin',    status: 'active',   department: 'Management',  joined: 'Jan 2022', initials: 'AJ', avatarBg: '#E1F5EE', avatarTc: '#085041' },
   { id: 2, name: 'Bob Smith',     email: 'bob@oms.com',   role: 'employee', status: 'active',   department: 'Operations',  joined: 'Mar 2023', initials: 'BS', avatarBg: '#E6F1FB', avatarTc: '#0C447C' },
   { id: 3, name: 'Carol White',   email: 'carol@oms.com', role: 'employee', status: 'on-leave', department: 'Support',     joined: 'Jul 2023', initials: 'CW', avatarBg: '#FAEEDA', avatarTc: '#633806' },
@@ -50,11 +58,6 @@ const EMPLOYEES: Employee[] = [
 ];
 
 // ─── Style Maps ───────────────────────────────────────────────────────────────
-
-const ROLE_STYLES: Record<EmployeeRole, string> = {
-  admin:    'bg-[#EEEDFE] text-[#3C3489]',
-  employee: 'bg-[#E6F1FB] text-[#0C447C]',
-};
 
 const STATUS_STYLES: Record<EmployeeStatus, { dot: string; text: string; label: string }> = {
   active:     { dot: 'bg-[#639922]', text: 'text-[#3B6D11]', label: 'Active'   },
@@ -74,13 +77,24 @@ const FILTERS: { label: string; value: FilterType }[] = [
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function EmployeeTable() {
+  const [employees, setEmployees]       = useState<Employee[]>(INITIAL_EMPLOYEES);
   const [search, setSearch]             = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-    const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen]                 = useState(false);
+  const [profileEmployee, setProfileEmployee] = useState<Employee | null>(null);
 
+  const handleRoleChange = (id: number, newRole: EmployeeRole) => {
+    setEmployees(prev => prev.map(e => e.id === id ? { ...e, role: newRole } : e));
+    toast.success(`Role updated to ${newRole}`);
+  };
+
+  const handleStatusChange = (id: number, newStatus: EmployeeStatus) => {
+    setEmployees(prev => prev.map(e => e.id === id ? { ...e, status: newStatus } : e));
+    toast.success(`Status updated to ${newStatus}`);
+  };
 
   const filtered = useMemo(() => {
-    return EMPLOYEES.filter((e) => {
+    return employees.filter((e) => {
       const q = search.toLowerCase();
       const matchSearch =
         !q ||
@@ -93,14 +107,14 @@ export default function EmployeeTable() {
         e.status === activeFilter;
       return matchSearch && matchFilter;
     });
-  }, [search, activeFilter]);
+  }, [search, activeFilter, employees]);
 
   const stats = useMemo(() => ({
-    total:   EMPLOYEES.length,
-    active:  EMPLOYEES.filter((e) => e.status === 'active').length,
-    admins:  EMPLOYEES.filter((e) => e.role === 'admin').length,
-    onLeave: EMPLOYEES.filter((e) => e.status === 'on-leave').length,
-  }), []);
+    total:   employees.length,
+    active:  employees.filter((e) => e.status === 'active').length,
+    admins:  employees.filter((e) => e.role === 'admin').length,
+    onLeave: employees.filter((e) => e.status === 'on-leave').length,
+  }), [employees]);
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -117,31 +131,26 @@ export default function EmployeeTable() {
           + Add employee
         </button>
       </div>
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Staffs</DialogTitle>
+            <DialogTitle>Add New Staff</DialogTitle>
           </DialogHeader>
-
           <form className="space-y-4">
-            <Input placeholder="name" className="w-100"></Input>
-
+            <Input placeholder="Name" />
             <Select>
               <SelectTrigger className="w-full max-w-48">
-                <SelectValue placeholder="" />
+                <SelectValue placeholder="Role" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="Laptop">Admin</SelectItem>
-                  <SelectItem value="Furniture">Employyes</SelectItem>
+                  <SelectItem value="admin">Admin</SelectItem>
+                  <SelectItem value="employee">Employee</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
-
-            <Button
-              type="submit"
-              className="w-full bg-primary text-white rounded-md p-2"
-            >
+            <Button type="submit" className="w-full bg-primary text-white rounded-md p-2">
               Save
             </Button>
           </form>
@@ -195,11 +204,10 @@ export default function EmployeeTable() {
           <thead>
             <tr className="border-b border-border">
               {[
-                { label: 'Employee',   width: '32%' },
-                { label: 'Role',       width: '13%' },
-                { label: 'Status',     width: '14%' },
-                { label: 'Joined',     width: '13%' },
-                { label: '',           width: '11%' },
+                { label: 'Employee', width: '28%' },
+                { label: 'Role',     width: '18%' },
+                { label: 'Status',   width: '18%' },
+                { label: '',         width: '8%'  },
               ].map((h, i) => (
                 <th
                   key={i}
@@ -214,7 +222,7 @@ export default function EmployeeTable() {
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-12 text-sm text-muted-foreground">
+                <td colSpan={4} className="text-center py-12 text-sm text-muted-foreground">
                   No employees found
                 </td>
               </tr>
@@ -240,33 +248,52 @@ export default function EmployeeTable() {
 
                   {/* Role */}
                   <td className="px-4 py-3">
-                    <span className={`inline-block text-[11px] font-medium px-2.5 py-0.5 rounded-full ${ROLE_STYLES[e.role]}`}>
-                      {e.role}
-                    </span>
+                    <Select
+                      value={e.role}
+                      onValueChange={(value) => handleRoleChange(e.id, value as EmployeeRole)}
+                    >
+                      <SelectTrigger className="h-7 text-xs w-28">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Change role</SelectLabel>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="employee">Employee</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </td>
-
-                
 
                   {/* Status */}
                   <td className="px-4 py-3">
-                    <div className={`flex items-center gap-1.5 text-xs ${STATUS_STYLES[e.status].text}`}>
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_STYLES[e.status].dot}`} />
-                      {STATUS_STYLES[e.status].label}
-                    </div>
+                    <Select
+                      value={e.status}
+                      onValueChange={(value) => handleStatusChange(e.id, value as EmployeeStatus)}
+                    >
+                      <SelectTrigger className="h-7 text-xs w-28">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Change status</SelectLabel>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="on-leave">On leave</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </td>
 
-                  {/* Joined */}
-                  <td className="px-4 py-3 text-xs text-muted-foreground">
-                    {e.joined}
-                  </td>
-
-                  {/* Action */}
+                  {/* View */}
                   <td className="px-4 py-3">
-                    <button className="text-xs text-muted-foreground border border-border rounded-md px-2.5 py-1 hover:text-foreground hover:border-foreground transition-colors cursor-pointer">
-                      Edit
+                    <button
+                      onClick={() => setProfileEmployee(e)}
+                      className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    >
+                      <Eye className="w-4 h-4" />
                     </button>
                   </td>
-
                 </tr>
               ))
             )}
@@ -275,9 +302,50 @@ export default function EmployeeTable() {
 
         {/* Footer */}
         <div className="px-4 py-3 border-t border-border text-xs text-muted-foreground">
-          Showing {filtered.length} of {EMPLOYEES.length} employees
+          Showing {filtered.length} of {employees.length} employees
         </div>
       </div>
+
+      {/* Profile sheet */}
+      <Sheet open={!!profileEmployee} onOpenChange={(o) => !o && setProfileEmployee(null)}>
+        <SheetContent side="right" className="w-80">
+          <SheetHeader>
+            <SheetTitle>Employee Profile</SheetTitle>
+          </SheetHeader>
+          {profileEmployee && (
+            <div className="mt-6 flex flex-col gap-5">
+              {/* Avatar */}
+              <div className="flex flex-col items-center gap-3">
+                <div
+                  className="w-16 h-16 rounded-full flex items-center justify-center text-lg font-semibold"
+                  style={{ background: profileEmployee.avatarBg, color: profileEmployee.avatarTc }}
+                >
+                  {profileEmployee.initials}
+                </div>
+                <div className="text-center">
+                  <p className="font-semibold text-foreground">{profileEmployee.name}</p>
+                  <p className="text-xs text-muted-foreground">{profileEmployee.email}</p>
+                </div>
+              </div>
+
+              {/* Details */}
+              <div className="border border-border rounded-xl divide-y divide-border text-sm">
+                {[
+                  { label: "Role",       value: profileEmployee.role       },
+                  { label: "Status",     value: profileEmployee.status     },
+                  { label: "Department", value: profileEmployee.department  },
+                  { label: "Joined",     value: profileEmployee.joined     },
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex items-center justify-between px-4 py-2.5">
+                    <span className="text-xs text-muted-foreground">{label}</span>
+                    <span className="text-xs font-medium text-foreground capitalize">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
 
     </div>
   );
