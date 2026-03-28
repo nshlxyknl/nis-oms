@@ -74,7 +74,6 @@ const FILTERS: { label: string; value: FilterType }[] = [
   { label: 'Inactive',  value: 'inactive' },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function EmployeeTable() {
   const [employees, setEmployees]       = useState<Employee[]>(INITIAL_EMPLOYEES);
