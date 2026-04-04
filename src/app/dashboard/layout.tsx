@@ -1,13 +1,10 @@
-"use client"
 
 import { AppSidebar } from "@/components/app-sidebar"
-import SkeletonCard from "@/components/cards/SkeletonCard"
 import { SiteHeader } from "@/components/site-header"
 import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import { useSession } from "next-auth/react"
 
 export default function DashboardLayout({
   children,
@@ -17,11 +14,7 @@ export default function DashboardLayout({
 
 {
 
-   const { status } = useSession()
-
-  if (status === "loading" ) {
-    return <SkeletonCard />
-  }
+ 
   return (
     <SidebarProvider>
       <div className="flex h-screen w-full">

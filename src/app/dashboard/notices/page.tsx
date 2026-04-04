@@ -1,9 +1,9 @@
-import { notices } from '@/components/cards/NoticeCard'
+import { Notice, notidata } from '@/services/data/NoticeData';
 import { Megaphone, Pin } from 'lucide-react'
 
 const NoticePage = () => {
 
-  const noti = notices;
+  const noti: Notice[] = notidata;
 
   return (
 <div className="p-6">
