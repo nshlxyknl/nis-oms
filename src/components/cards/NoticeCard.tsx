@@ -1,36 +1,24 @@
+"use client"
+
+import { useQuery } from '@tanstack/react-query';
 import { Megaphone, Pin } from 'lucide-react';
-
-  export const notices = [
-  {
-    id: 1,
-    title: "Office closed on Feb 28 for maintenance",
-    date: "Feb 22, 2026",
-    pinned: true,
-  },
-  {
-    id: 2,
-    title: "New parking policy effective from March 1",
-    date: "Feb 20, 2026",
-    pinned: true,
-  },
-  {
-    id: 3,
-    title: "Annual team outing scheduled — RSVP by March 5",
-    date: "Feb 18, 2026",
-    pinned: false,
-  },
-  {
-    id: 4,
-    title: "IT systems upgrade this weekend — expect brief downtime",
-    date: "Feb 16, 2026",
-    pinned: false,
-  },
-];
-
-const NoticeCard = () => {
+import { api } from '@/services/api';
+import SkeletonCard from './SkeletonCard';
+import { Notice, notidata } from '@/services/data/NoticeData';
 
 
 
+  
+
+export const NoticeCard = () => {
+const { data, isLoading } = useQuery<Notice[]>({
+    queryKey: ['notices'],
+    queryFn:  () => api.get('/notices'),
+  });
+
+const notices = Array.isArray(data) ? data : notidata;
+
+  if (isLoading) return <div>Loading..</div>;
   return (
 <div>
           <div className="flex items-center justify-between mb-4">
@@ -38,9 +26,7 @@ const NoticeCard = () => {
               <Megaphone className="w-5 h-5 text-primary" />
               <h2 className="text-lg font-display font-semibold text-foreground">Notices</h2>
             </div>
-            {/* <button className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:gap-2.5 transition-all">
-              View All <ArrowRight className="w-4 h-4" />
-            </button> */}
+            
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             { notices

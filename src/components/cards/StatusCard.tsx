@@ -1,9 +1,23 @@
-import React from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, CheckCircle, AlertCircle } from "lucide-react"
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { api } from "@/services/api";
+import SkeletonCard from "./SkeletonCard";
 
 const StatusCard = () => {
+
+  const { data: session } = useSession();
+
+  const { data: status, isLoading } = useQuery({
+    queryKey: ['attendance', session?.user?.id],
+    queryFn:  () => api.get(`/attendance/${session?.user?.id}/today`),
+    enabled:  !!session?.user?.id, 
+  });
+
+  if (isLoading) return <div>Loading..</div>
+
   return (
     <Card className="mb-6">
       <CardHeader>
