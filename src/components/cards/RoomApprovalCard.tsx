@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '../ui/button'
-import { CheckCircle, DoorOpen, Package, XCircle } from 'lucide-react'
+import { CheckCircle, DoorOpen, XCircle } from 'lucide-react'
 
 interface IRooms {
   id: number,
@@ -40,8 +40,6 @@ const RoomApprovalCard = () => {
     console.log(`Item ${id} was ${action}d`);
 
   };
-
-
 
 
   return (

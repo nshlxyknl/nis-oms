@@ -29,16 +29,12 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "./ui/button";
-import SkeletonCard from "./cards/SkeletonCard";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session , status} = useSession();
   const [open, setOpen] = useState(false)
 
   const sideData = session?.user?.role === "admin" ? adminData : userData;
-
-if (status== "loading")
-  return <SkeletonCard/>
 
   return (
     <>

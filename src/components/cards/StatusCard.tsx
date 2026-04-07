@@ -4,7 +4,6 @@ import { Clock, CheckCircle, AlertCircle } from "lucide-react"
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { api } from "@/services/api";
-import SkeletonCard from "./SkeletonCard";
 
 const StatusCard = () => {
 
