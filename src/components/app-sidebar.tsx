@@ -29,12 +29,43 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "./ui/button";
+import {  useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/services/api";
+import { toast } from "sonner";
+import { useForm } from 'react-hook-form';
+
+
+export interface CreateNoticeDto {
+  title: string;
+  date: string;
+  pinned: boolean;
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session , status} = useSession();
+  const { data: session } = useSession();
+    const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
   const [open, setOpen] = useState(false)
 
   const sideData = session?.user?.role === "admin" ? adminData : userData;
+
+  const queryClient = useQueryClient();
+
+  const { mutate: createNotice, isPending } = useMutation({
+  mutationFn: (data: CreateNoticeDto) => api.post('/notices/add', data),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['notices'] });
+    toast.success('Notice created!');
+     reset();
+      setOpen(false);
+  },
+  onError: (error) => {
+    toast.error('Something went wrong');
+  }
+});
+
+const onSubmit = (data: CreateNoticeDto) => {
+    createNotice(data);
+  };
 
   return (
     <>
@@ -75,19 +106,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <DialogTitle>Add Notice</DialogTitle>
           </DialogHeader>
 
-          <form className="space-y-4">
-           
-            <textarea
-              placeholder="Notice"
+           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <input
+              {...register('title')}
+              placeholder="Title"
               className="w-full border rounded-md p-2"
             />
-            <Button
-              type="submit"
-              className="w-full bg-primary text-white rounded-md p-2"
-            >
-              Save Notice
+            <input
+              {...register('date')}
+              type="date"
+              className="w-full border rounded-md p-2"
+            />
+            <div className="flex items-center gap-2">
+              <input {...register('pinned')} type="checkbox" id="pinned" />
+              <label htmlFor="pinned" className="text-sm">Pin this notice</label>
+            </div>
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? 'Saving...' : 'Save Notice'}
             </Button>
           </form>
+
         </DialogContent>
       </Dialog>
       </>
