@@ -1,4 +1,6 @@
+"use client";
 
+import { useSession } from "next-auth/react";
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import {
@@ -10,22 +12,21 @@ export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
-}) 
-
-{
+}) {
+  const { status } = useSession();
 
  
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full">
-        <AppSidebar />
-        <div className="flex flex-1 flex-col">
-          <SiteHeader />
-          <SidebarInset className="flex-1">
-            {children}
-          </SidebarInset>
+      <SidebarProvider>
+        <div className="flex h-screen w-full">
+          <AppSidebar />
+          <div className="flex flex-1 flex-col">
+            <SiteHeader />
+            <SidebarInset className="flex-1">
+              {children}
+            </SidebarInset>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
   )
 }

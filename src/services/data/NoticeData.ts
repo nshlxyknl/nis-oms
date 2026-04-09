@@ -22,7 +22,7 @@ export const notidata: Notice[] = [
     id: 3,
     title: "Annual team outing scheduled — RSVP by March 5",
     date: "Feb 18, 2026",
-    pinned: false,
+    pinned: true,
   },
   {
     id: 4,

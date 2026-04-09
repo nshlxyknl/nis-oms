@@ -7,7 +7,6 @@ import {
   CardContent
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Spinner } from "@/components/ui/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
@@ -85,10 +84,8 @@ const handleTabChange=(value: string)=>{
 
         {
             loading ?
-            <>
-            <Skeleton className="w-50 h-40" />
+            <>loading..
               <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
-
             <Badge variant="secondary" className="flex items-center gap-2">
         Checking
         <Spinner data-icon="inline-end"  />
