@@ -1,14 +1,11 @@
 
 "use client"
-import NoticeGrid from '@/components/pages/NoticeGrid';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useQuery } from '@tanstack/react-query';
+import { Megaphone } from 'lucide-react';
 import { api } from '@/services/api';
 import { Notice, notidata } from '@/services/data/NoticeData';
-import { useQuery } from '@tanstack/react-query';
-import { Megaphone, Pin } from 'lucide-react'
-import { toast } from 'sonner';
+import NoticeGrid from '@/components/pages/NoticeGrid';
 
 const NoticePage = () => {
   const { data, isLoading } = useQuery<Notice[]>({
@@ -16,14 +13,7 @@ const NoticePage = () => {
     queryFn:  () => api.get('/notices'),
   });
 
-
-  const initial = Array.isArray(data) ? data : notidata;
-  const [notices, setNotices] = useState<Notice[]>(initial);
-
-  const togglePin = (id: number, pinned: boolean) => {
-    setNotices(prev => prev.map(n => n.id === id ? { ...n, pinned: !pinned } : n));
-    toast.success(pinned ? 'Notice unpinned' : 'Notice pinned');
-  };
+  const notices = Array.isArray(data) ? data : notidata;
 
   if (isLoading) return <div>Loading..</div>;
 

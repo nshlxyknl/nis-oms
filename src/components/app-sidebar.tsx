@@ -42,11 +42,30 @@ export interface CreateNoticeDto {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth();
-  const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
+  const { data: session } = useSession();
+    const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
   const [open, setOpen] = useState(false)
 
   const sideData = user?.role === "admin" ? adminData : userData;
+
+  const queryClient = useQueryClient();
+
+  const { mutate: createNotice, isPending } = useMutation({
+  mutationFn: (data: CreateNoticeDto) => api.post('/notices/add', data),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['notices'] });
+    toast.success('Notice created!');
+     reset();
+      setOpen(false);
+  },
+  onError: (error) => {
+    toast.error('Something went wrong');
+  }
+});
+
+const onSubmit = (data: CreateNoticeDto) => {
+    createNotice(data);
+  };
 
   const queryClient = useQueryClient();
 
