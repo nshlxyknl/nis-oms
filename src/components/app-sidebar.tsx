@@ -59,8 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       setOpen(false);
   },
   onError: (error) => {
-    const message = error instanceof Error ? error.message : 'Something went wrong';
-    toast.error(message);
+    toast.error('Something went wrong');
   }
 });
 

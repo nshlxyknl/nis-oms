@@ -1,10 +1,8 @@
-"use client";
-
-import { useQuery } from '@tanstack/react-query';
-import { Megaphone } from 'lucide-react';
+import NoticeGrid from '@/components/pages/NoticeGrid';
 import { api } from '@/services/api';
 import { Notice, notidata } from '@/services/data/NoticeData';
-import NoticeGrid from '@/components/pages/NoticeGrid';
+import { useQuery } from '@tanstack/react-query';
+import { Megaphone, Pin } from 'lucide-react'
 
 const NoticePage = () => {
   const { data, isLoading } = useQuery<Notice[]>({
@@ -14,7 +12,7 @@ const NoticePage = () => {
 
   const notices = Array.isArray(data) ? data : notidata;
 
-  if (isLoading) return <div>Loading..</div>;
+  const noti: Notice[] = notidata;
 
   return (
     <div className="p-8">

@@ -16,6 +16,7 @@ export const NoticeCard = () => {
 
   if (isLoading) return <div>Loading..</div>;
 
+  if (isLoading) return <div>Loading..</div>;
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
