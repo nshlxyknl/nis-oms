@@ -98,7 +98,8 @@ const onSubmit = (data: CreateNoticeDto) => {
       setOpen(false);
   },
   onError: (error) => {
-    toast.error('Something went wrong');
+    const message = error instanceof Error ? error.message : 'Something went wrong';
+    toast.error(message);
   }
 });
 
