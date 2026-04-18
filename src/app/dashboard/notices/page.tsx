@@ -1,4 +1,7 @@
+import NoticeGrid from '@/components/pages/NoticeGrid';
+import { api } from '@/services/api';
 import { Notice, notidata } from '@/services/data/NoticeData';
+import { useQuery } from '@tanstack/react-query';
 import { Megaphone, Pin } from 'lucide-react'
 
 const NoticePage = () => {
