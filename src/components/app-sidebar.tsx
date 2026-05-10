@@ -42,8 +42,8 @@ export interface CreateNoticeDto {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession();
-    const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
+  const { user } = useAuth();
+  const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
   const [open, setOpen] = useState(false)
 
   const sideData = user?.role === "admin" ? adminData : userData;
