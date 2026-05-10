@@ -5,16 +5,16 @@ import { userFeatures } from "@/lib/user/userFeaturesdata";
 import {
   ArrowRight
 } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 
 const FeaturesCard = () => {
   const router = useRouter();
 
-  const {data: session } =useSession()
+  const {user} = useAuth()
 
-const featureCards = session?.user?.role === "admin" ? adminFeatures : userFeatures;
+const featureCards = user?.role === "admin" ? adminFeatures : userFeatures;
 
   const colorMap = {
     primary: "bg-primary/10 text-primary",

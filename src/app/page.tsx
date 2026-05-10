@@ -1,10 +1,23 @@
+"use client";
+
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      router.push("/dashboard");
+    }
+  }, [user, router]);
+
   return (
-     <main className="max-w-7xl h-screen mx-auto px-4 sm:px-6 lg:px-8 ">
+    <main className="max-w-7xl h-screen mx-auto px-4 sm:px-6 lg:px-8 ">
       <div className="flex flex-col justify-center items-center text-center h-screen">
         <h1 className="text-4xl font-bold text-foreground mb-6 text-balance">Welcome to OMS</h1>
         <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto text-pretty">
@@ -17,7 +30,7 @@ export default function Home() {
             </Button>
           </Link>
           <Button asChild variant="outline" size="lg">
-          <a href='#f'> Learn More </a> 
+            <a href='#f'> Learn More </a> 
           </Button>
         </div>
       </div>

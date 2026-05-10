@@ -2,20 +2,15 @@
 
 import { PanelLeft } from "lucide-react"
 
-import { SearchForm } from "@/components/search-form"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useSidebar } from "@/components/ui/sidebar"
-import { useSession } from "next-auth/react"
+import { useAuth } from "@/hooks/useAuth"
 import { NavUser } from "./nav-user"
-import { adminData } from "@/lib/admin/adminSidebardata"
-import { userData } from "@/lib/user/userSidebardata"
 
 export function SiteHeader() {
   const { toggleSidebar, open } = useSidebar()
-  const { data: session } = useSession();
-    const sideData = session?.user?.role === "admin" ? adminData : userData;
-
+  const { user } = useAuth();
 
   return (
     <header className="bg-background sticky top-0 z-50 flex w-full items-center border-b">
@@ -32,13 +27,11 @@ export function SiteHeader() {
         <Separator orientation="vertical" className="mr-2 h-4" />
         
         <span className="hidden sm:block font-serif text-2xl transition-all duration-300 ease-in-out">
-          Welcome, {session?.user?.name}
+          Welcome, {user?.name}
         </span>
         <div className="ml-auto">
-           <NavUser user={sideData.user} />
+           <NavUser />
         </div>
-               
-
       </div>
     </header>
   )
