@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/hooks/useAuth";
 import { adminData } from "@/lib/admin/adminSidebardata";
 import { userData } from "@/lib/user/userSidebardata";
 
@@ -42,11 +42,11 @@ export interface CreateNoticeDto {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession();
-    const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
+  const { user } = useAuth();
+  const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
   const [open, setOpen] = useState(false)
 
-  const sideData = session?.user?.role === "admin" ? adminData : userData;
+  const sideData = user?.role === "admin" ? adminData : userData;
 
   const queryClient = useQueryClient();
 
@@ -73,14 +73,14 @@ const onSubmit = (data: CreateNoticeDto) => {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip={session?.user?.name || "User"}>
+            <SidebarMenuButton size="lg" tooltip={user?.name || "User"}>
               <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                 <Command className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{session?.user?.name}</span>
+                <span className="truncate font-medium">{user?.name}</span>
                 <span className="truncate text-xs">
-                  {session?.user?.role === "admin" ? "Admin" : "Employee"}
+                  {user?.role === "admin" ? "Admin" : "Employee"}
                 </span>
               </div>
             </SidebarMenuButton>

@@ -1,22 +1,17 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { AppSidebar } from "@/components/app-sidebar"
-import { SiteHeader } from "@/components/site-header"
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar";
+import { SiteHeader } from "@/components/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const { status } = useSession();
-
- 
   return (
+    <ProtectedRoute>
       <SidebarProvider>
         <div className="flex h-screen w-full">
           <AppSidebar />
@@ -28,5 +23,6 @@ export default function DashboardLayout({
           </div>
         </div>
       </SidebarProvider>
-  )
+    </ProtectedRoute>
+  );
 }
