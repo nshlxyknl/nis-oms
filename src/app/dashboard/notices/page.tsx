@@ -1,4 +1,3 @@
-"use client";
 
 import NoticeGrid from '@/components/pages/NoticeGrid';
 import { api } from '@/services/api';
