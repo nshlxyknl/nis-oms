@@ -16,35 +16,79 @@ const SignupPage = () => {
   const [tab, setTab] = useState<string>("login");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
   const [name, setName] = useState<string>("");
+
+  // Test backend connection
+  const testConnection = async () => {
+    try {
+      const response = await fetch('http://localhost:3003/auth/me', {
+        credentials: 'include'
+      });
+      console.log('Backend connection test:', response.status, response.statusText);
+      if (!response.ok) {
+        console.warn('Backend is running but auth endpoint returned:', response.status);
+      }
+    } catch (error) {
+      console.error('Backend connection failed - make sure your NestJS backend is running on http://localhost:3003');
+      console.error('Error details:', error);
+    }
+  };
+
+  React.useEffect(() => {
+    testConnection();
+  }, []);
 
   const handlereg = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     register({
       username,
       password,
-      email,
       name,
     });
     // Reset form and switch to login tab on success
     setTab("login");
     setUsername('');
     setPassword('');
-    setEmail('');
     setName('');
   };
 
   const handlelog = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Attempting login with:', { username, password: '***' });
+    
+    // Test /auth/me endpoint before login
+    try {
+      const meResponse = await fetch('http://localhost:3003/auth/me', {
+        credentials: 'include'
+      });
+      console.log('Before login - /auth/me status:', meResponse.status);
+    } catch (error) {
+      console.log('Before login - /auth/me failed:', error);
+    }
+    
     login({ username, password });
+    
+    // Test /auth/me endpoint after login (with delay)
+    setTimeout(async () => {
+      try {
+        const meResponse = await fetch('http://localhost:3003/auth/me', {
+          credentials: 'include'
+        });
+        console.log('After login - /auth/me status:', meResponse.status);
+        if (meResponse.ok) {
+          const userData = await meResponse.json();
+          console.log('After login - user data:', userData);
+        }
+      } catch (error) {
+        console.log('After login - /auth/me failed:', error);
+      }
+    }, 1000);
   };
 
   const handleTabChange = (value: string) => {
     setTab(value);
     setUsername('');
     setPassword('');
-    setEmail('');
     setName('');
   }
 
@@ -77,14 +121,6 @@ const SignupPage = () => {
                   placeholder='Full Name' 
                   value={name} 
                   onChange={(e) => setName(e.target.value)} 
-                  className={'p-4'} 
-                  required 
-                />
-                <Input 
-                  type='email' 
-                  placeholder='Email' 
-                  value={email} 
-                  onChange={(e) => setEmail(e.target.value)} 
                   className={'p-4'} 
                   required 
                 />

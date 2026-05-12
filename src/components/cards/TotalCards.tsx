@@ -29,7 +29,6 @@ export interface BaseItems {
 export interface User {
   id: number;
   name: string;
-  email: string;
   role: "USER" | "ADMIN";
 }
 
@@ -60,12 +59,12 @@ const TotalCards = <T extends BaseItems>({
 
   // Mock user data
   const mockUsers: User[] = [
-    { id: 1, name: "Alice Johnson", email: "alice@company.com", role: "USER" },
-    { id: 2, name: "Bob Smith", email: "bob@company.com", role: "USER" },
-    { id: 3, name: "Charlie Davis", email: "charlie@company.com", role: "USER" },
-    { id: 4, name: "Diana Prince", email: "diana@company.com", role: "ADMIN" },
-    { id: 5, name: "Ethan Hunt", email: "ethan@company.com", role: "ADMIN" },
-    { id: 6, name: "Fiona Green", email: "fiona@company.com", role: "USER" },
+    { id: 1, name: "Alice Johnson", role: "USER" },
+    { id: 2, name: "Bob Smith", role: "USER" },
+    { id: 3, name: "Charlie Davis", role: "USER" },
+    { id: 4, name: "Diana Prince", role: "ADMIN" },
+    { id: 5, name: "Ethan Hunt", role: "ADMIN" },
+    { id: 6, name: "Fiona Green", role: "USER" },
   ];
 
   const getStatusOptions = (currentStatus: Status): Status[] => {
@@ -190,7 +189,7 @@ const TotalCards = <T extends BaseItems>({
                     <SelectItem key={user.id} value={user.id.toString()}>
                       <div className="flex flex-col">
                         <span className="font-medium">{user.name}</span>
-                        <span className="text-xs text-muted-foreground">{user.email}</span>
+                        <span className="text-xs text-muted-foreground">{user.role}</span>
                       </div>
                     </SelectItem>
                   ))}

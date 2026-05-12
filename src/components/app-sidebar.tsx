@@ -17,7 +17,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/hooks/useAuth";
+import { useUser } from "@/hooks/useUser";
 import { adminData } from "@/lib/admin/adminSidebardata";
 import { userData } from "@/lib/user/userSidebardata";
 
@@ -29,11 +29,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "./ui/button";
-import {  useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/services/api";
 import { toast } from "sonner";
 import { useForm } from 'react-hook-form';
-
 
 export interface CreateNoticeDto {
   title: string;
@@ -42,7 +41,7 @@ export interface CreateNoticeDto {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
   const [open, setOpen] = useState(false)
 
@@ -51,91 +50,78 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const queryClient = useQueryClient();
 
   const { mutate: createNotice, isPending } = useMutation({
-  mutationFn: (data: CreateNoticeDto) => api.post('/notices/add', data),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['notices'] });
-    toast.success('Notice created!');
-     reset();
+    mutationFn: (data: CreateNoticeDto) => api.post('/notices/add', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notices'] });
+      toast.success('Notice created!');
+      reset();
       setOpen(false);
-  },
-  onError: (error) => {
-    toast.error('Something went wrong');
-  }
-});
+    },
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : 'Something went wrong';
+      toast.error(message);
+    }
+  });
 
-const onSubmit = (data: CreateNoticeDto) => {
-    createNotice(data);
-  };
-
-  const queryClient = useQueryClient();
-
-  const { mutate: createNotice, isPending } = useMutation({
-  mutationFn: (data: CreateNoticeDto) => api.post('/notices/add', data),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['notices'] });
-    toast.success('Notice created!');
-     reset();
-      setOpen(false);
-  },
-  onError: (error) => {
-    const message = error instanceof Error ? error.message : 'Something went wrong';
-    toast.error(message);
-  }
-});
-
-const onSubmit = (data: CreateNoticeDto) => {
+  const onSubmit = (data: CreateNoticeDto) => {
     createNotice(data);
   };
 
   return (
     <>
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip={user?.name || "User"}>
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <Command className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user?.name}</span>
-                <span className="truncate text-xs">
-                  {user?.role === "admin" ? "Admin" : "Employee"}
-                </span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={sideData.navMain} />
-        <NavSecondary items={sideData.navSecondary} onAction={(action) => {
-    if (action === "open-add-notice") {
-      setOpen(true)
-    }
-  }} className="mt-auto" />
-      </SidebarContent>
-      <SidebarFooter>
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+      <Sidebar collapsible="icon" {...props}>
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" tooltip={user?.name || "User"}>
+                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <Command className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user?.name}</span>
+                  <span className="truncate text-xs">
+                    {user?.role === "admin" ? "Admin" : "Employee"}
+                  </span>
+                </div>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMain items={sideData.navMain} />
+          <NavSecondary 
+            items={sideData.navSecondary} 
+            onAction={(action) => {
+              if (action === "open-add-notice") {
+                setOpen(true)
+              }
+            }} 
+            className="mt-auto" 
+          />
+        </SidebarContent>
+        <SidebarFooter>
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
 
-     <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add Notice</DialogTitle>
           </DialogHeader>
 
-           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <input
               {...register('title')}
               placeholder="Title"
               className="w-full border rounded-md p-2"
+              required
             />
             <input
               {...register('date')}
               type="date"
               className="w-full border rounded-md p-2"
+              required
             />
             <div className="flex items-center gap-2">
               <input {...register('pinned')} type="checkbox" id="pinned" />
@@ -145,9 +131,8 @@ const onSubmit = (data: CreateNoticeDto) => {
               {isPending ? 'Saving...' : 'Save Notice'}
             </Button>
           </form>
-
         </DialogContent>
       </Dialog>
-      </>
+    </>
   );
 }

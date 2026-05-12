@@ -7,14 +7,16 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (user) {
+    console.log('Home page - User state:', { user, isLoading });
+    if (user && !isLoading) {
+      console.log('Home page - Redirecting authenticated user to dashboard');
       router.push("/dashboard");
     }
-  }, [user, router]);
+  }, [user, isLoading, router]);
 
   return (
     <main className="max-w-7xl h-screen mx-auto px-4 sm:px-6 lg:px-8 ">

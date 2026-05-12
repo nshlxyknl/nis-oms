@@ -7,7 +7,6 @@ interface User {
   id: number;
   username: string;
   name: string;
-  email: string;
   role: string;
 }
 
@@ -28,14 +27,36 @@ export function useAuth() {
   const loginMutation = useMutation({
     mutationFn: (credentials: { username: string; password: string }) =>
       api.post('/auth/login', credentials),
-    onSuccess: () => {
-      // Invalidate and refetch user data
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+    onSuccess: async (data) => {
+      console.log('Login successful, response:', data);
       toast.success('Login successful!');
-      router.push('/dashboard');
+      
+      // Wait a moment for session to be set, then check user
+      setTimeout(async () => {
+        try {
+          console.log('Checking user session after login...');
+          const userResponse = await api.get('/auth/me');
+          console.log('User data after login:', userResponse);
+          
+          // Update the query cache with the user data
+          queryClient.setQueryData(['auth', 'me'], userResponse);
+          
+          // Redirect based on role
+          const redirectPath = userResponse.role === 'ADMIN' ? '/dashboard/overview' : '/dashboard/overview';
+          console.log(`Redirecting to: ${redirectPath}`);
+          window.location.href = redirectPath;
+          
+        } catch (error) {
+          console.error('Failed to get user data after login:', error);
+          // Fallback: try to redirect anyway
+          console.log('Fallback: redirecting to dashboard');
+          window.location.href = '/dashboard';
+        }
+      }, 500);
     },
-    onError: () => {
-      toast.error('Login failed');
+    onError: (error) => {
+      console.error('Login failed:', error);
+      toast.error(`Login failed: ${error.message}`);
     },
   });
 
@@ -43,7 +64,6 @@ export function useAuth() {
   const registerMutation = useMutation({
     mutationFn: (userData: {
       username: string;
-      email: string;
       password: string;
       name: string;
     }) => api.post('/auth/register', userData),

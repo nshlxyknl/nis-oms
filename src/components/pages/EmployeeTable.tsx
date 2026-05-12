@@ -36,7 +36,6 @@ type FilterType     = 'all' | EmployeeRole | EmployeeStatus;
 interface Employee {
   id:         number;
   name:       string;
-  email:      string;
   role:       EmployeeRole;
   status:     EmployeeStatus;
   department: string;
@@ -49,12 +48,12 @@ interface Employee {
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
 const INITIAL_EMPLOYEES: Employee[] = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@oms.com', role: 'admin',    status: 'active',   department: 'Management',  joined: 'Jan 2022', initials: 'AJ', avatarBg: '#E1F5EE', avatarTc: '#085041' },
-  { id: 2, name: 'Bob Smith',     email: 'bob@oms.com',   role: 'employee', status: 'active',   department: 'Operations',  joined: 'Mar 2023', initials: 'BS', avatarBg: '#E6F1FB', avatarTc: '#0C447C' },
-  { id: 3, name: 'Carol White',   email: 'carol@oms.com', role: 'employee', status: 'on-leave', department: 'Support',     joined: 'Jul 2023', initials: 'CW', avatarBg: '#FAEEDA', avatarTc: '#633806' },
-  { id: 4, name: 'David Kim',     email: 'david@oms.com', role: 'admin',    status: 'active',   department: 'Engineering', joined: 'Feb 2021', initials: 'DK', avatarBg: '#EEEDFE', avatarTc: '#3C3489' },
-  { id: 5, name: 'Eva Martinez',  email: 'eva@oms.com',   role: 'employee', status: 'inactive', department: 'Sales',       joined: 'Sep 2023', initials: 'EM', avatarBg: '#FAECE7', avatarTc: '#712B13' },
-  { id: 6, name: 'Frank Lee',     email: 'frank@oms.com', role: 'employee', status: 'active',   department: 'Operations',  joined: 'Nov 2022', initials: 'FL', avatarBg: '#FBEAF0', avatarTc: '#72243E' },
+  { id: 1, name: 'Alice Johnson', role: 'admin',    status: 'active',   department: 'Management',  joined: 'Jan 2022', initials: 'AJ', avatarBg: '#E1F5EE', avatarTc: '#085041' },
+  { id: 2, name: 'Bob Smith',     role: 'employee', status: 'active',   department: 'Operations',  joined: 'Mar 2023', initials: 'BS', avatarBg: '#E6F1FB', avatarTc: '#0C447C' },
+  { id: 3, name: 'Carol White',   role: 'employee', status: 'on-leave', department: 'Support',     joined: 'Jul 2023', initials: 'CW', avatarBg: '#FAEEDA', avatarTc: '#633806' },
+  { id: 4, name: 'David Kim',     role: 'admin',    status: 'active',   department: 'Engineering', joined: 'Feb 2021', initials: 'DK', avatarBg: '#EEEDFE', avatarTc: '#3C3489' },
+  { id: 5, name: 'Eva Martinez',  role: 'employee', status: 'inactive', department: 'Sales',       joined: 'Sep 2023', initials: 'EM', avatarBg: '#FAECE7', avatarTc: '#712B13' },
+  { id: 6, name: 'Frank Lee',     role: 'employee', status: 'active',   department: 'Operations',  joined: 'Nov 2022', initials: 'FL', avatarBg: '#FBEAF0', avatarTc: '#72243E' },
 ];
 
 // ─── Style Maps ───────────────────────────────────────────────────────────────
@@ -98,7 +97,6 @@ export default function EmployeeTable() {
       const matchSearch =
         !q ||
         e.name.toLowerCase().includes(q) ||
-        e.email.toLowerCase().includes(q) ||
         e.department.toLowerCase().includes(q);
       const matchFilter =
         activeFilter === 'all' ||
@@ -240,7 +238,7 @@ export default function EmployeeTable() {
                       </div>
                       <div>
                         <p className="font-medium text-[13px] text-foreground">{e.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{e.email}</p>
+                        <p className="text-[11px] text-muted-foreground">{e.department}</p>
                       </div>
                     </div>
                   </td>
@@ -323,7 +321,7 @@ export default function EmployeeTable() {
                 </div>
                 <div className="text-center">
                   <p className="font-semibold text-foreground">{profileEmployee.name}</p>
-                  <p className="text-xs text-muted-foreground">{profileEmployee.email}</p>
+                  <p className="text-xs text-muted-foreground">{profileEmployee.department}</p>
                 </div>
               </div>
 

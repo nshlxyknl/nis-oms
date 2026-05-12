@@ -1,6 +1,23 @@
 # 🚀 NestJS Backend Setup for Session-Based Authentication
 
-## 1. Install Required Packages
+This guide helps you set up a NestJS backend that works with your Next.js frontend. The frontend has been cleaned up to remove all Prisma dependencies - all database operations should be handled by your NestJS backend.
+
+## Frontend Changes Made
+
+✅ **Removed from Frontend:**
+- All Prisma dependencies (`@prisma/client`, `@prisma/adapter-pg`, `prisma`)
+- Database connection strings and Prisma configuration
+- `src/lib/prisma.ts` file
+- `prisma/` folder and schema files
+- Email fields from all interfaces and components
+
+✅ **Frontend Now Uses:**
+- TanStack Query for API calls to your NestJS backend
+- Session-based authentication (no JWT in localStorage)
+- HTTP-only cookies for session management
+- API calls to `http://localhost:3003` (your NestJS backend)
+
+## 1. Install Required Packages in Your NestJS Backend
 
 ```bash
 npm install express-session @types/express-session
