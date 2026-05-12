@@ -11,7 +11,6 @@ import {
 export const userData = {
   user: {
     name: "user",
-    email: `user@gmail.com`,
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [

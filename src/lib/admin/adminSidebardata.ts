@@ -9,7 +9,6 @@ import {
 export const adminData = {
   user: {
     name: "admin",
-    email: "admin@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [

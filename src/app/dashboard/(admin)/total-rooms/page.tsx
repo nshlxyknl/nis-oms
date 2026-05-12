@@ -46,8 +46,8 @@ const TotalRooms = () => {
   };
 
   const mockAdmins = [
-    { id: 4, name: "Diana Prince", email: "diana@company.com", role: "ADMIN" },
-    { id: 5, name: "Ethan Hunt", email: "ethan@company.com", role: "ADMIN" },
+    { id: 4, name: "Diana Prince", role: "ADMIN" },
+    { id: 5, name: "Ethan Hunt", role: "ADMIN" },
   ] as const;
 
   

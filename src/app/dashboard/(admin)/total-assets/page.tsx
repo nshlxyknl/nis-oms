@@ -87,12 +87,12 @@ const TotalAssets = () => {
 
   
   const mockUsers = [
-    { id: 1, name: "Alice Johnson", email: "alice@company.com", role: "USER" },
-    { id: 2, name: "Bob Smith", email: "bob@company.com", role: "USER" },
-    { id: 3, name: "Charlie Davis", email: "charlie@company.com", role: "USER" },
-    { id: 4, name: "Diana Prince", email: "diana@company.com", role: "ADMIN" },
-    { id: 5, name: "Ethan Hunt", email: "ethan@company.com", role: "ADMIN" },
-    { id: 6, name: "Fiona Green", email: "fiona@company.com", role: "USER" },
+    { id: 1, name: "Alice Johnson", role: "USER" },
+    { id: 2, name: "Bob Smith", role: "USER" },
+    { id: 3, name: "Charlie Davis", role: "USER" },
+    { id: 4, name: "Diana Prince", role: "ADMIN" },
+    { id: 5, name: "Ethan Hunt", role: "ADMIN" },
+    { id: 6, name: "Fiona Green", role: "USER" },
   ] as const;
 
   return (
