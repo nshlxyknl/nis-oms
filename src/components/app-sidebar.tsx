@@ -41,7 +41,7 @@ export interface CreateNoticeDto {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { user } = useAuth();
+  const { user } = useUser();
   const { register, handleSubmit, reset } = useForm<CreateNoticeDto>();
   const [open, setOpen] = useState(false)
 
@@ -64,26 +64,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   });
 
   const onSubmit = (data: CreateNoticeDto) => {
-    createNotice(data);
-  };
-
-  const queryClient = useQueryClient();
-
-  const { mutate: createNotice, isPending } = useMutation({
-  mutationFn: (data: CreateNoticeDto) => api.post('/notices/add', data),
-  onSuccess: () => {
-    queryClient.invalidateQueries({ queryKey: ['notices'] });
-    toast.success('Notice created!');
-     reset();
-      setOpen(false);
-  },
-  onError: (error) => {
-    const message = error instanceof Error ? error.message : 'Something went wrong';
-    toast.error(message);
-  }
-});
-
-const onSubmit = (data: CreateNoticeDto) => {
     createNotice(data);
   };
 
