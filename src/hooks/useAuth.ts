@@ -31,28 +31,11 @@ export function useAuth() {
       console.log('Login successful, response:', data);
       toast.success('Login successful!');
       
-      // Wait a moment for session to be set, then check user
-      setTimeout(async () => {
-        try {
-          console.log('Checking user session after login...');
-          const userResponse = await api.get('/auth/me');
-          console.log('User data after login:', userResponse);
-          
-          // Update the query cache with the user data
-          queryClient.setQueryData(['auth', 'me'], userResponse);
-          
-          // Redirect based on role
-          const redirectPath = userResponse.role === 'ADMIN' ? '/dashboard/overview' : '/dashboard/overview';
-          console.log(`Redirecting to: ${redirectPath}`);
-          window.location.href = redirectPath;
-          
-        } catch (error) {
-          console.error('Failed to get user data after login:', error);
-          // Fallback: try to redirect anyway
-          console.log('Fallback: redirecting to dashboard');
-          window.location.href = '/dashboard';
-        }
-      }, 500);
+      // Simple redirect after a short delay
+      setTimeout(() => {
+        console.log('Redirecting to dashboard...');
+        window.location.href = '/dashboard';
+      }, 1000);
     },
     onError: (error) => {
       console.error('Login failed:', error);
