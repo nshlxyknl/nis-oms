@@ -83,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 });
 
-const onSubmit = (data: CreateNoticeDto) => {
+  const onSubmit = (data: CreateNoticeDto) => {
     createNotice(data);
   };
 
