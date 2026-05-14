@@ -55,7 +55,34 @@ const SignupPage = () => {
   const handlelog = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Attempting login with:', { username, password: '***' });
+    
+    // Test /auth/me endpoint before login
+    try {
+      const meResponse = await fetch('http://localhost:3003/auth/me', {
+        credentials: 'include'
+      });
+      console.log('Before login - /auth/me status:', meResponse.status);
+    } catch (error) {
+      console.log('Before login - /auth/me failed:', error);
+    }
+    
     login({ username, password });
+    
+    // Test /auth/me endpoint after login (with delay)
+    setTimeout(async () => {
+      try {
+        const meResponse = await fetch('http://localhost:3003/auth/me', {
+          credentials: 'include'
+        });
+        console.log('After login - /auth/me status:', meResponse.status);
+        if (meResponse.ok) {
+          const userData = await meResponse.json();
+          console.log('After login - user data:', userData);
+        }
+      } catch (error) {
+        console.log('After login - /auth/me failed:', error);
+      }
+    }, 1000);
   };
 
   const handleTabChange = (value: string) => {
