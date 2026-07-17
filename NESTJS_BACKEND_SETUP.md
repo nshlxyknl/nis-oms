@@ -2,6 +2,17 @@
 
 This guide helps you set up a NestJS backend that works with your Next.js frontend. The frontend has been cleaned up to remove all Prisma dependencies - all database operations should be handled by your NestJS backend.
 
+## ⚠️ **Critical: Session Configuration**
+
+Your backend MUST properly configure sessions for the login/auth flow to work. Here's what's required:
+
+### **Session Must Persist Across Requests**
+
+After login, the `/auth/me` endpoint must return the same user data. This requires:
+1. Session middleware properly configured
+2. Session data saved on login
+3. Same session retrieved on subsequent requests
+
 ## Frontend Changes Made
 
 ✅ **Removed from Frontend:**

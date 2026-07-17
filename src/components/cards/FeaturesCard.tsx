@@ -7,14 +7,19 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 
 const FeaturesCard = () => {
   const router = useRouter();
-
   const {user} = useAuth()
+  const [mounted, setMounted] = useState(false);
 
-const featureCards = user?.role === "admin" ? adminFeatures : userFeatures;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+const featureCards = mounted && user?.role === "admin" ? adminFeatures : userFeatures;
 
   const colorMap = {
     primary: "bg-primary/10 text-primary",

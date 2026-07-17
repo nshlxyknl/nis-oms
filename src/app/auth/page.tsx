@@ -17,6 +17,8 @@ const SignupPage = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [showTestButton, setShowTestButton] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Test backend connection
   const testConnection = async () => {
@@ -35,27 +37,53 @@ const SignupPage = () => {
   };
 
   React.useEffect(() => {
+    setMounted(true);
     testConnection();
+    // Check if token exists for test button
+    setShowTestButton(!!localStorage.getItem('token'));
   }, []);
 
-  const handlereg = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handlereg = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log('Register form submitted');
+    console.log('Register data:', { username, name, password: '***' });
+    
+    if (!username || !password || !name) {
+      console.error('Missing required fields');
+      return;
+    }
+    
     register({
       username,
       password,
       name,
     });
-    // Reset form and switch to login tab on success
-    setTab("login");
-    setUsername('');
-    setPassword('');
-    setName('');
   };
 
-  const handlelog = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handlelog = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Attempting login with:', { username, password: '***' });
+    console.log('Login form submitted');
+    console.log('Login data:', { username, password: '***' });
+    
+    if (!username || !password) {
+      console.error('Missing required fields');
+      return;
+    }
+    
+    // Clear any existing invalid tokens
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
     login({ username, password });
+  };
+
+  const testRedirect = () => {
+    console.log('Testing redirect...');
+    console.log('Current localStorage:', {
+      token: localStorage.getItem('token'),
+      user: localStorage.getItem('user')
+    });
+    window.location.href = '/dashboard/overview';
   };
 
   const handleTabChange = (value: string) => {
@@ -154,6 +182,16 @@ const SignupPage = () => {
                   <Button type='submit' className="w-full sm:w-auto" disabled={loading}>
                     {isLoginLoading ? "Logging in..." : "Login"}
                   </Button>
+                  {mounted && showTestButton && (
+                    <Button 
+                      type='button' 
+                      variant="outline" 
+                      onClick={testRedirect}
+                      className="w-full sm:w-auto text-xs"
+                    >
+                      Test Dashboard Access
+                    </Button>
+                  )}
                 </div>
                 <h3 className='text-center'>
                   Don't have an account?{" "}

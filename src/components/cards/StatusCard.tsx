@@ -4,14 +4,20 @@ import { Clock, CheckCircle, AlertCircle } from "lucide-react"
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/services/api";
+import { useEffect, useState } from "react";
 
 const StatusCard = () => {
   const { user } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { data: status, isLoading } = useQuery({
     queryKey: ['attendance', user?.id],
     queryFn:  () => api.get(`/attendance/${user?.id}/today`),
-    enabled:  !!user?.id, 
+    enabled:  mounted && !!user?.id, 
   });
 
   if (isLoading) return <div>Loading..</div>
