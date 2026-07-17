@@ -1,6 +1,8 @@
 "use client"
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
+import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 
 import {
   Collapsible,
@@ -18,7 +20,6 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
-import { usePathname } from "next/navigation"
 
 export function NavMain({
   items,
@@ -35,13 +36,18 @@ export function NavMain({
   }[]
 
 }) {
-
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => {
-            const isActive = pathname === item.url
+            const isActive = mounted && pathname === item.url
 
           return (
           

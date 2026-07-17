@@ -34,8 +34,6 @@ import { useAuth } from "@/hooks/useAuth"
 export function NavUser() {
   const { user, logout } = useAuth();
 
-
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
