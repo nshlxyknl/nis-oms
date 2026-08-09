@@ -1,73 +1,167 @@
 "use client";
-import { Building, DoorOpen } from 'lucide-react';
+import { Building, DoorOpen, Plus } from 'lucide-react';
 import TotalCards from '@/components/cards/TotalCards';
 import { BaseItems } from '@/components/cards/TotalCards';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/services/api';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
-interface Rooms extends BaseItems{
+interface Room extends BaseItems {
   capacity: number;
-  floor: string;
-  occupiedBy?: string;
+  floor?: string;
 }
 
 const TotalRooms = () => {
-  const [rooms, setRooms] = useState<Rooms[]>([
-    { id: 1, name: "Conference Room A", capacity: 12, floor: "2nd", status: "available", occupiedBy: undefined },
-    { id: 2, name: "Board Room", capacity: 20, floor: "3rd", status: "occupied", occupiedBy: "Diana Prince" },
-    { id: 3, name: "Meeting Room 3", capacity: 6, floor: "1st", status: "available", occupiedBy: undefined },
-    { id: 4, name: "Huddle Space", capacity: 4, floor: "1st", status: "maintenance", occupiedBy: undefined },
-  ]);
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    capacity: '',
+  });
 
-  const handleStatusChange = (roomId: number, newStatus: "available" | "occupied" | "maintenance" | "assigned", userId?: number) => {
-    setRooms(prevRooms => 
-      prevRooms.map(room => {
-        if (room.id === roomId) {
-          const updatedRoom = { ...room, status: newStatus };
-          // If occupying with an admin, update the occupiedBy field
-          if (newStatus === "occupied" && userId) {
-            const admin = mockAdmins.find(a => a.id === userId);
-            updatedRoom.occupiedBy = admin ? admin.name : undefined;
-          } else if (newStatus === "available") {
-            updatedRoom.occupiedBy = undefined;
-          }
-          return updatedRoom;
-        }
-        return room;
-      })
-    );
-    
-    if (userId) {
-      const admin = mockAdmins.find(a => a.id === userId);
-      toast.success(`Room occupied by ${admin?.name}`);
-    } else {
-      toast.success(`Room status updated to ${newStatus}`);
-    }
+  // Fetch rooms
+  const { data: roomsData = [], isLoading } = useQuery({
+    queryKey: ['rooms'],
+    queryFn: () => api.get('/rooms'),
+  });
+
+  // Transform API data to match component interface
+  const rooms: Room[] = roomsData.map((room: any) => ({
+    id: room.id,
+    name: room.name,
+    capacity: room.capacity,
+    status: room.status,
+    floor: undefined, // API doesn't have floor, keep for UI consistency
+  }));
+
+  // Create room mutation
+  const createMutation = useMutation({
+    mutationFn: (data: { name: string; capacity: number }) => 
+      api.post('/rooms', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      toast.success('Room added successfully');
+      setOpen(false);
+      setFormData({ name: '', capacity: '' });
+    },
+    onError: () => toast.error('Failed to add room'),
+  });
+
+  // Update room status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      api.patch(`/rooms/${id}/status`, { status: status.toUpperCase() }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['rooms'] });
+      toast.success('Room status updated');
+    },
+    onError: () => toast.error('Failed to update room status'),
+  });
+
+  const handleStatusChange = (
+    roomId: number,
+    newStatus: "available" | "occupied" | "maintenance" | "assigned"
+  ) => {
+    updateStatusMutation.mutate({
+      id: roomId,
+      status: newStatus,
+    });
   };
 
-  const mockAdmins = [
-    { id: 4, name: "Diana Prince", role: "ADMIN" },
-    { id: 5, name: "Ethan Hunt", role: "ADMIN" },
-  ] as const;
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.name || !formData.capacity) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    createMutation.mutate({
+      name: formData.name,
+      capacity: parseInt(formData.capacity),
+    });
+  };
 
-  
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex m-10 gap-4 justify-between items-center">
+          <div className="h-6 w-32 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-24 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="m-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-card rounded-xl border border-border p-5 h-48 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
-  return (<div>
-    <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 mt-10 ml-14">
-      <DoorOpen className="w-5 h-5 text-purple-600 " /> Rooms
-    </h2>
-    <TotalCards<Rooms>
-      title="Rooms"
-      items={rooms}
-      icon={<Building className="w-4 h-4 text-purple-600" />}
-      iconBg="bg-purple-100"
-      accentColor="hover:border-purple-400"
-      renderSubtitle={(room) => `Capacity: ${room.capacity} · ${room.floor} Floor${room.occupiedBy ? ` · ${room.occupiedBy}` : ''}`}
-      onStatusChange={handleStatusChange}
-      type="room"
-    />
+  return (
+    <div>
+      <div className="flex m-10 gap-4 justify-between items-center">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+          <DoorOpen className="w-5 h-5 text-purple-600" /> Rooms
+        </h2>
+        <Button onClick={() => setOpen(true)}>
+          New <Plus />
+        </Button>
+      </div>
+      
+      <TotalCards<Room>
+        title="Rooms"
+        items={rooms}
+        icon={<Building className="w-4 h-4 text-purple-600" />}
+        iconBg="bg-purple-100"
+        accentColor="hover:border-purple-400"
+        renderSubtitle={(room) => `Capacity: ${room.capacity}${room.floor ? ` · ${room.floor} Floor` : ''}`}
+        onStatusChange={handleStatusChange}
+        type="room"
+      />
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add New Room</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              placeholder="Room Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
+
+            <Input
+              type="number"
+              placeholder="Capacity"
+              value={formData.capacity}
+              onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+              min="1"
+              required
+            />
+
+            <Button
+              type="submit"
+              className="w-full bg-primary text-white rounded-md p-2"
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? 'Saving...' : 'Save Room'}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
- )
-}
+  );
+};
 
-export default TotalRooms
+export default TotalRooms;

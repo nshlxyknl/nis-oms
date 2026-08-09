@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { CalendarOff, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +18,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/services/api";
+import { useState } from "react";
 
 type LeaveStatus = "pending" | "approved" | "rejected";
 type LeaveType   = "annual" | "sick" | "emergency" | "unpaid";
@@ -26,12 +28,14 @@ type LeaveType   = "annual" | "sick" | "emergency" | "unpaid";
 interface LeaveRequest {
   id: number;
   type: LeaveType;
-  from: string;
-  to: string;
+  startDate: string;
+  endDate: string;
   days: number;
-  reason: string;
+  reason?: string;
   status: LeaveStatus;
   appliedOn: string;
+  userName?: string;
+  approvedBy?: string;
 }
 
 const STATUS_STYLES: Record<LeaveStatus, string> = {
@@ -41,22 +45,36 @@ const STATUS_STYLES: Record<LeaveStatus, string> = {
 };
 
 const LEAVE_BALANCE = [
-  { label: "Annual",    total: 15,  used: 5, color: "bg-blue-500"   },
-  { label: "Sick",      total: 10,  used: 2, color: "bg-red-400"    },
-  { label: "Emergency", total: 3,   used: 1, color: "bg-orange-400" },
+  { label: "Annual",    total: 15,  used: 0, color: "bg-blue-500"   },
+  { label: "Sick",      total: 10,  used: 0, color: "bg-red-400"    },
+  { label: "Emergency", total: 3,   used: 0, color: "bg-orange-400" },
   { label: "Unpaid",    total: 999, used: 0, color: "bg-gray-400"   },
 ];
 
-const INITIAL_REQUESTS: LeaveRequest[] = [
-  { id: 1, type: "annual",    from: "2026-03-10", to: "2026-03-12", days: 3, reason: "Family vacation",   status: "approved", appliedOn: "2026-03-01" },
-  { id: 2, type: "sick",      from: "2026-02-20", to: "2026-02-21", days: 2, reason: "Fever and rest",    status: "approved", appliedOn: "2026-02-20" },
-  { id: 3, type: "emergency", from: "2026-04-05", to: "2026-04-05", days: 1, reason: "Personal matter",   status: "pending",  appliedOn: "2026-03-20" },
-];
-
 export default function LeavePage() {
-  const [requests, setRequests] = useState<LeaveRequest[]>(INITIAL_REQUESTS);
-  const [open, setOpen]         = useState(false);
-  const [form, setForm]         = useState({ type: "" as LeaveType | "", from: "", to: "", reason: "" });
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ type: "" as LeaveType | "", from: "", to: "", reason: "" });
+
+  // Fetch leave requests
+  const { data: leavesData = [], isLoading } = useQuery<LeaveRequest[]>({
+    queryKey: ['leaves'],
+    queryFn: () => api.get('/leaves'),
+  });
+
+  // Create leave request mutation
+  const createMutation = useMutation({
+    mutationFn: (data: { type: string; startDate: string; endDate: string; days: number; reason?: string }) =>
+      api.post('/leaves', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leaves'] });
+      toast.success('Leave request submitted');
+      closeDialog();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to submit leave request');
+    },
+  });
 
   const closeDialog = () => {
     setOpen(false);
@@ -69,26 +87,58 @@ export default function LeavePage() {
     return Math.max(1, Math.round(diff / (1000 * 60 * 60 * 24)) + 1);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.type || !form.from || !form.to) {
       toast.error("Please fill in all required fields");
       return;
     }
-    const newRequest: LeaveRequest = {
-      id:        requests.length + 1,
-      type:      form.type as LeaveType,
-      from:      form.from,
-      to:        form.to,
-      days:      calcDays(form.from, form.to),
-      reason:    form.reason,
-      status:    "pending",
-      appliedOn: new Date().toISOString().split("T")[0],
-    };
-    setRequests(prev => [newRequest, ...prev]);
-    toast.success("Leave request submitted");
-    closeDialog();
+    
+    createMutation.mutate({
+      type: form.type.toUpperCase(),
+      startDate: form.from,
+      endDate: form.to,
+      days: calcDays(form.from, form.to),
+      reason: form.reason || undefined,
+    });
   };
+
+  // Calculate leave balance from actual requests
+  const calculateBalance = () => {
+    const balance = [...LEAVE_BALANCE];
+    leavesData.forEach((leave) => {
+      if (leave.status === 'approved') {
+        const balanceItem = balance.find(b => b.label.toLowerCase() === leave.type);
+        if (balanceItem) {
+          balanceItem.used += leave.days;
+        }
+      }
+    });
+    return balance;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div className="h-6 w-48 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-32 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-card border border-border rounded-xl p-4 h-32 animate-pulse" />
+          ))}
+        </div>
+        <div className="border border-border rounded-xl p-4 space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-12 bg-muted animate-pulse rounded" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const leaveBalance = calculateBalance();
 
   return (
     <div className="p-8 flex flex-col gap-6">
@@ -106,7 +156,7 @@ export default function LeavePage() {
 
       {/* Leave balance */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {LEAVE_BALANCE.map((b) => {
+        {leaveBalance.map((b) => {
           const remaining = b.total === 999 ? "∞" : b.total - b.used;
           const pct       = b.total === 999 ? 0 : Math.round((b.used / b.total) * 100);
           return (
@@ -151,18 +201,18 @@ export default function LeavePage() {
             </tr>
           </thead>
           <tbody>
-            {requests.length === 0 ? (
+            {leavesData.length === 0 ? (
               <tr>
                 <td colSpan={7} className="text-center py-12 text-sm text-muted-foreground">
                   No leave requests yet
                 </td>
               </tr>
             ) : (
-              requests.map((r) => (
+              leavesData.map((r) => (
                 <tr key={r.id} className="border-t border-border hover:bg-muted/40 transition-colors">
                   <td className="px-4 py-3 text-xs capitalize">{r.type}</td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">{r.from}</td>
-                  <td className="px-4 py-3 text-xs text-muted-foreground">{r.to}</td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground">{r.startDate}</td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground">{r.endDate}</td>
                   <td className="px-4 py-3 text-xs">{r.days}</td>
                   <td className="px-4 py-3 text-xs text-muted-foreground truncate">{r.reason || "—"}</td>
                   <td className="px-4 py-3">
@@ -177,7 +227,7 @@ export default function LeavePage() {
           </tbody>
         </table>
         <div className="px-4 py-3 border-t border-border text-xs text-muted-foreground">
-          {requests.length} request{requests.length !== 1 ? "s" : ""}
+          {leavesData.length} request{leavesData.length !== 1 ? "s" : ""}
         </div>
       </div>
 
@@ -228,7 +278,9 @@ export default function LeavePage() {
 
             <div className="flex gap-2 justify-end">
               <Button type="button" variant="outline" onClick={closeDialog}>Cancel</Button>
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={createMutation.isPending}>
+                {createMutation.isPending ? 'Submitting...' : 'Submit'}
+              </Button>
             </div>
           </form>
         </DialogContent>
