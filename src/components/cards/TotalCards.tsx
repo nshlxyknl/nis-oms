@@ -41,6 +41,7 @@ interface IProps<T extends BaseItems> {
   renderSubtitle: (item: T) => string;
   onStatusChange?: (itemId: number, newStatus: Status, userId?: number) => void;
   type?: "asset" | "room";
+  users?: User[]; // Optional users prop, will use mock if not provided
 }
 
 const TotalCards = <T extends BaseItems>({
@@ -51,13 +52,14 @@ const TotalCards = <T extends BaseItems>({
   accentColor,
   onStatusChange,
   type = "asset",
+  users, // Accept users prop
 }: IProps<T>) => {
   const [showUserDialog, setShowUserDialog] = useState(false);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(null);
   const [selectedUser, setSelectedUser] = useState<string>("");
 
-  // Mock user data
+  // Mock user data - fallback if users not provided
   const mockUsers: User[] = [
     { id: 1, name: "Alice Johnson", role: "USER" },
     { id: 2, name: "Bob Smith", role: "USER" },
@@ -66,6 +68,9 @@ const TotalCards = <T extends BaseItems>({
     { id: 5, name: "Ethan Hunt", role: "ADMIN" },
     { id: 6, name: "Fiona Green", role: "USER" },
   ];
+
+  // Use provided users or fall back to mock users
+  const availableUsers = users || mockUsers;
 
   const getStatusOptions = (currentStatus: Status): Status[] => {
     switch (currentStatus) {
@@ -105,8 +110,8 @@ const TotalCards = <T extends BaseItems>({
   };
 
   const filteredUsers = type === "room" 
-    ? mockUsers.filter(user => user.role === "ADMIN")
-    : mockUsers.filter(user => user.role === "USER");
+    ? availableUsers.filter(user => user.role === "ADMIN")
+    : availableUsers.filter(user => user.role === "USER");
   return (
     <>
       <div className="m-10">
