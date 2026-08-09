@@ -19,94 +19,116 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api } from "@/services/api";
 
-interface Assets extends BaseItems {
+interface Asset extends BaseItems {
   category: string;
   assignedTo: string;
+  assignedToId?: number;
 }
 
 const TotalAssets = () => {
-  const [assets, setAssets] = useState<Assets[]>([
-    {
-      id: 1,
-      name: 'MacBook Pro 16"',
-      category: "Laptop",
-      assignedTo: "Alice Johnson",
-      status: "assigned",
-    },
-    {
-      id: 2,
-      name: 'Dell Monitor 27"',
-      category: "Peripheral",
-      assignedTo: "Bob Smith",
-      status: "assigned",
-    },
-    {
-      id: 3,
-      name: "Standing Desk",
-      category: "Furniture",
-      assignedTo: "—",
-      status: "available",
-    },
-    {
-      id: 4,
-      name: "Logitech Webcam",
-      category: "Peripheral",
-      assignedTo: "—",
-      status: "maintenance",
-    },
-  ]);
-
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "",
+  });
 
-  const handleStatusChange = (assetId: number, newStatus: "available" | "occupied" | "maintenance" | "assigned", userId?: number) => {
-    setAssets(prevAssets => 
-      prevAssets.map(asset => {
-        if (asset.id === assetId) {
-          const updatedAsset = { ...asset, status: newStatus };
-          // If assigning to a user, update the assignedTo field
-          if (newStatus === "assigned" && userId) {
-            const user = mockUsers.find(u => u.id === userId);
-            updatedAsset.assignedTo = user ? user.name : "—";
-          } else if (newStatus === "available") {
-            updatedAsset.assignedTo = "—";
-          }
-          return updatedAsset;
-        }
-        return asset;
-      })
-    );
-    
-    if (userId) {
-      const user = mockUsers.find(u => u.id === userId);
-      toast.success(`Asset assigned to ${user?.name}`);
-    } else {
-      toast.success(`Asset status updated to ${newStatus}`);
-    }
+  // Fetch assets
+  const { data: assetsData = [], isLoading } = useQuery({
+    queryKey: ['assets'],
+    queryFn: () => api.get('/assets'),
+  });
+
+  // Fetch employees for assignment
+  const { data: employees = [] } = useQuery({
+    queryKey: ['employees'],
+    queryFn: () => api.get('/employees'),
+  });
+
+  // Transform API data to match component interface
+  const assets: Asset[] = assetsData.map((asset: any) => ({
+    id: asset.id,
+    name: asset.name,
+    category: asset.type,
+    assignedTo: asset.assignedTo || "—",
+    assignedToId: asset.assignedToId,
+    status: asset.status,
+  }));
+
+  // Create asset mutation
+  const createMutation = useMutation({
+    mutationFn: (data: typeof formData) => api.post('/assets', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets'] });
+      toast.success('Asset added successfully');
+      setOpen(false);
+      setFormData({ name: "", type: "" });
+    },
+    onError: () => toast.error('Failed to add asset'),
+  });
+
+  // Update asset status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status, assignedToId }: { id: number; status: string; assignedToId?: number }) =>
+      api.patch(`/assets/${id}/status`, { status: status.toUpperCase(), assignedToId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['assets'] });
+      toast.success('Asset status updated');
+    },
+    onError: () => toast.error('Failed to update asset status'),
+  });
+
+  const handleStatusChange = (
+    assetId: number,
+    newStatus: "available" | "occupied" | "maintenance" | "assigned",
+    userId?: number
+  ) => {
+    updateStatusMutation.mutate({
+      id: assetId,
+      status: newStatus,
+      assignedToId: newStatus === "assigned" ? userId : undefined,
+    });
   };
 
-  
-  const mockUsers = [
-    { id: 1, name: "Alice Johnson", role: "USER" },
-    { id: 2, name: "Bob Smith", role: "USER" },
-    { id: 3, name: "Charlie Davis", role: "USER" },
-    { id: 4, name: "Diana Prince", role: "ADMIN" },
-    { id: 5, name: "Ethan Hunt", role: "ADMIN" },
-    { id: 6, name: "Fiona Green", role: "USER" },
-  ] as const;
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.name || !formData.type) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    createMutation.mutate(formData);
+  };
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex m-10 gap-4 justify-between items-center">
+          <div className="h-6 w-32 bg-muted animate-pulse rounded" />
+          <div className="h-10 w-24 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="m-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-card rounded-xl border border-border p-5 h-48 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <div className="flex  m-10 gap-249 justify-evenly">
-        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 ">
+      <div className="flex m-10 gap-4 justify-between">
+        <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
           <Package className="w-5 h-5 text-blue-600" /> Assets
         </h2>
-
         <Button onClick={() => setOpen(true)}>
-          New <Plus />{" "}
+          New <Plus />
         </Button>
       </div>
-      <TotalCards<Assets>
+      <TotalCards<Asset>
         title="Assets"
         items={assets}
         icon={<Package className="w-4 h-4 text-blue-600" />}
@@ -115,26 +137,37 @@ const TotalAssets = () => {
         renderSubtitle={(asset) => `${asset.category} · ${asset.assignedTo}`}
         onStatusChange={handleStatusChange}
         type="asset"
+        users={employees}
       />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add New Assets</DialogTitle>
+            <DialogTitle>Add New Asset</DialogTitle>
           </DialogHeader>
 
-          <form className="space-y-4">
-            <Input placeholder="name" className="w-100"></Input>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              placeholder="Asset Name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
 
-            <Select>
-              <SelectTrigger className="w-full max-w-48">
-                <SelectValue placeholder="category" />
+            <Select
+              value={formData.type}
+              onValueChange={(value) => setFormData({ ...formData, type: value })}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="Laptop">Laptop</SelectItem>
                   <SelectItem value="Furniture">Furniture</SelectItem>
                   <SelectItem value="Peripheral">Peripheral</SelectItem>
+                  <SelectItem value="Tablet">Tablet</SelectItem>
+                  <SelectItem value="Phone">Phone</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -142,8 +175,9 @@ const TotalAssets = () => {
             <Button
               type="submit"
               className="w-full bg-primary text-white rounded-md p-2"
+              disabled={createMutation.isPending}
             >
-              Save
+              {createMutation.isPending ? "Saving..." : "Save Asset"}
             </Button>
           </form>
         </DialogContent>
