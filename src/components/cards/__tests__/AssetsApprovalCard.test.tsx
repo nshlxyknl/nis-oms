@@ -104,7 +104,9 @@ describe('AssetsApprovalCard', () => {
       await waitFor(() => {
         expect(screen.getByText(/John Doe/)).toBeInTheDocument();
         expect(screen.getByText(/Jane Smith/)).toBeInTheDocument();
-        expect(screen.getByText(/Electronics/)).toBeInTheDocument();
+        // Use getAllByText since "Electronics" appears multiple times
+        const electronicsElements = screen.getAllByText(/Electronics/);
+        expect(electronicsElements.length).toBeGreaterThan(0);
         expect(screen.getByText(/Furniture/)).toBeInTheDocument();
       });
     });

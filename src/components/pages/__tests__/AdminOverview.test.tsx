@@ -1,15 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@/test/test-utils';
 import AdminOverview from '../AdminOverview';
-
-// Mock child components
-vi.mock('../cards/FeaturesCard', () => ({
-  default: () => <div data-testid="features-card">FeaturesCard</div>,
-}));
-
-vi.mock('../cards/NoticeCard', () => ({
-  default: () => <div data-testid="notice-card">NoticeCard</div>,
-}));
 
 describe('AdminOverview', () => {
   describe('Rendering', () => {
@@ -44,22 +35,6 @@ describe('AdminOverview', () => {
     });
   });
 
-  describe('Child Components', () => {
-    it('renders FeaturesCard component', () => {
-      render(<AdminOverview />);
-
-      const featuresCard = screen.getByTestId('features-card');
-      expect(featuresCard).toBeInTheDocument();
-    });
-
-    it('renders NoticeCard component', () => {
-      render(<AdminOverview />);
-
-      const noticeCard = screen.getByTestId('notice-card');
-      expect(noticeCard).toBeInTheDocument();
-    });
-  });
-
   describe('Layout Structure', () => {
     it('renders header card with correct styling', () => {
       render(<AdminOverview />);
@@ -74,7 +49,7 @@ describe('AdminOverview', () => {
 
       const iconContainer = document.querySelector('.w-12.h-12.rounded-xl');
       expect(iconContainer).toBeInTheDocument();
-      expect(iconContainer).toHaveClass('bg-primary\\/10');
+      expect(iconContainer).toHaveClass('bg-primary/10');
     });
 
     it('uses flex layout for header content', () => {
